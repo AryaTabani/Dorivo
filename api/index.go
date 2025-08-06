@@ -14,6 +14,7 @@ func init() {
 	db.InitDB()
 
 	router = gin.Default()
+	router.GET("/tenant/:tenantId", controllers.GetTenantConfigHandler())
 	router.POST("/register", controllers.RegisterHandler())
 	router.POST("/login", controllers.LoginHandler())
 
