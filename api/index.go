@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	db "example.com/m/v2/DB"
+	"example.com/m/v2/controllers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,6 +14,8 @@ func init() {
 	db.InitDB()
 
 	router = gin.Default()
+	router.POST("/register", controllers.RegisterHandler())
+	router.POST("/login", controllers.LoginHandler())
 
 }
 func Handler(w http.ResponseWriter, r *http.Request) {
