@@ -20,7 +20,7 @@ var (
 	ErrUserExists         = errors.New("a user with this email address already exists")
 )
 
-func RegisterUser(ctx context.Context, tenantID int64, payload *models.RegisterPayload) (*models.User, error) {
+func RegisterUser(ctx context.Context, tenantID string, payload *models.RegisterPayload) (*models.User, error) {
 	_, err := repository.GetUserByEmailAndTenant(ctx, payload.Email, tenantID)
 	if err == nil {
 		return nil, ErrUserExists
@@ -50,7 +50,7 @@ func RegisterUser(ctx context.Context, tenantID int64, payload *models.RegisterP
 	return newUser, nil
 }
 
-func LoginUser(ctx context.Context, tenantID int64, payload *models.LoginPayload) (string, error) {
+func LoginUser(ctx context.Context, tenantID string, payload *models.LoginPayload) (string, error) {
 	user, err := repository.GetUserByEmailAndTenant(ctx, payload.Email, tenantID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -66,7 +66,7 @@ func LoginUser(ctx context.Context, tenantID int64, payload *models.LoginPayload
 
 	return generateUserToken(user.ID, tenantID)
 }
-func generateUserToken(userID int64, tenantID int64) (string, error) {
+func generateUserToken(userID int64, tenantID string) (string, error) {
 	claims := jwt.MapClaims{
 		"sub": userID,
 		"tid": tenantID,

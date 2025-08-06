@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"net/http"
-	"strconv" // Import strconv for parsing
 
 	"example.com/m/v2/models"
 	"example.com/m/v2/services"
@@ -12,11 +11,7 @@ import (
 
 func RegisterHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantID, err := strconv.ParseInt(c.GetHeader("X-Tenant-ID"), 10, 64)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "X-Tenant-ID header is required and must be a valid number"})
-			return
-		}
+		tenantID := c.GetHeader("X-Tenant-ID")
 
 		var payload models.RegisterPayload
 		if err := c.ShouldBindJSON(&payload); err != nil {
@@ -24,7 +19,7 @@ func RegisterHandler() gin.HandlerFunc {
 			return
 		}
 
-		_, err = services.RegisterUser(c.Request.Context(), tenantID, &payload)
+		_, err := services.RegisterUser(c.Request.Context(), tenantID, &payload)
 		if err != nil {
 			if errors.Is(err, services.ErrUserExists) {
 				c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
@@ -40,11 +35,7 @@ func RegisterHandler() gin.HandlerFunc {
 
 func LoginHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantID, err := strconv.ParseInt(c.GetHeader("X-Tenant-ID"), 10, 64)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "X-Tenant-ID header is required and must be a valid number"})
-			return
-		}
+		tenantID := c.GetHeader("X-Tenant-ID")
 
 		var payload models.LoginPayload
 		if err := c.ShouldBindJSON(&payload); err != nil {

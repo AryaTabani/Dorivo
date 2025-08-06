@@ -14,7 +14,7 @@ func CreateUser(ctx context.Context, user *models.User) error {
 	return err
 }
 
-func GetUserByEmailAndTenant(ctx context.Context, email string, tenantID int64) (*models.User, error) {
+func GetUserByEmailAndTenant(ctx context.Context, email string, tenantID string) (*models.User, error) {
 	var user models.User
 	query := `SELECT id, full_name, email, mobile_number, password_hash, date_of_birth, tenant_id FROM users WHERE email = ? AND tenant_id = ?`
 	err := db.DB.QueryRowContext(ctx, query, email, tenantID).Scan(
