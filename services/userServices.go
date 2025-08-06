@@ -20,8 +20,8 @@ var (
 	ErrUserExists         = errors.New("a user with this email address already exists")
 )
 
-func RegisterUser(ctx context.Context, payload *models.RegisterPayload) (*models.User, error) {
-	_, err := repository.GetUserByEmail(ctx, payload.Email)
+func RegisterUser(ctx context.Context, tenantID int64, payload *models.RegisterPayload) (*models.User, error) {
+	_, err := repository.GetUserByEmailAndTenant(ctx, payload.Email, tenantID)
 	if err == nil {
 		return nil, ErrUserExists
 	}
@@ -35,6 +35,7 @@ func RegisterUser(ctx context.Context, payload *models.RegisterPayload) (*models
 	}
 
 	newUser := &models.User{
+		TenantID:      tenantID,
 		Full_name:     payload.Full_name,
 		Email:         payload.Email,
 		Mobile_number: payload.Mobile_number,
@@ -49,8 +50,8 @@ func RegisterUser(ctx context.Context, payload *models.RegisterPayload) (*models
 	return newUser, nil
 }
 
-func LoginUser(ctx context.Context, payload *models.LoginPayload) (string, error) {
-	user, err := repository.GetUserByEmail(ctx, payload.Email)
+func LoginUser(ctx context.Context, tenantID int64, payload *models.LoginPayload) (string, error) {
+	user, err := repository.GetUserByEmailAndTenant(ctx, payload.Email, tenantID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", ErrInvalidCredentials
@@ -63,11 +64,12 @@ func LoginUser(ctx context.Context, payload *models.LoginPayload) (string, error
 		return "", ErrInvalidCredentials
 	}
 
-	return generateUserToken(user.ID)
+	return generateUserToken(user.ID, tenantID)
 }
-func generateUserToken(userID int64) (string, error) {
+func generateUserToken(userID int64, tenantID int64) (string, error) {
 	claims := jwt.MapClaims{
 		"sub": userID,
+		"tid": tenantID,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Hour * 72).Unix(),
 	}

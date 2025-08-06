@@ -9,15 +9,23 @@ import (
 )
 
 func CreateUser(ctx context.Context, user *models.User) error {
-	query := `INSERT INTO users (full_name, email, mobile_number, password_hash, date_of_birth) VALUES (?, ?, ?, ?, ?)`
-	_, err := db.DB.ExecContext(ctx, query, user.Full_name, user.Email, user.Mobile_number, user.Password_hash, user.Date_of_birth)
+	query := `INSERT INTO users (tenant_id, full_name, email, mobile_number, password_hash, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)`
+		_, err := db.DB.ExecContext(ctx, query, user.TenantID, user.Full_name, user.Email, user.Mobile_number, user.Password_hash, user.Date_of_birth)
 	return err
 }
 
-func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+func GetUserByEmailAndTenant(ctx context.Context, email string, tenantID int64) (*models.User, error) {
 	var user models.User
-	query := `SELECT id, full_name, email, mobile_number, password_hash, date_of_birth FROM users WHERE email = ?`
-	err := db.DB.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Full_name, &user.Email, &user.Mobile_number, &user.Password_hash, &user.Date_of_birth)
+	query := `SELECT id, full_name, email, mobile_number, password_hash, date_of_birth, tenant_id FROM users WHERE email = ? AND tenant_id = ?`
+	err := db.DB.QueryRowContext(ctx, query, email, tenantID).Scan(
+		&user.ID,
+		&user.Full_name,
+		&user.Email,
+		&user.Mobile_number,
+		&user.Password_hash,
+		&user.Date_of_birth,
+		&user.TenantID,
+	)
 	return &user, err
 }
 
