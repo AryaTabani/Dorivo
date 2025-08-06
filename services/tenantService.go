@@ -10,7 +10,7 @@ import (
 
 var ErrTenantNotFound = errors.New("tenant not found")
 
-func GetTenantConfig(ctx context.Context, id int64) (*models.TenantConfig, error) {
+func GetTenantConfig(ctx context.Context, id string) (*models.TenantConfig, error) {
 	tenant, err := repository.GetTenantByID(ctx, id)
 	if err != nil {
 		return nil, err

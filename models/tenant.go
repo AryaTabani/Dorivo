@@ -33,5 +33,6 @@ type TenantConfig struct {
 
 type Tenant struct {
 	ID     int64
+	Name   string
 	Config TenantConfig
 }

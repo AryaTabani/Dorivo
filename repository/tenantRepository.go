@@ -9,11 +9,11 @@ import (
 	"example.com/m/v2/models"
 )
 
-func GetTenantByID(ctx context.Context, id int64) (*models.Tenant, error) {
+func GetTenantByID(ctx context.Context, id string) (*models.Tenant, error) {
 	var tenant models.Tenant
 	var configJSON string 
 
-	query := "SELECT id, config FROM tenants WHERE id = ?"
+	query := "SELECT id, config FROM tenants WHERE name = ?"
 	err := db.DB.QueryRowContext(ctx, query, id).Scan(&tenant.ID, &configJSON)
 	if err != nil {
 		if err == sql.ErrNoRows {
