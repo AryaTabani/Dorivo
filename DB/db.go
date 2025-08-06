@@ -2,7 +2,10 @@ package db
 
 import (
 	"database/sql"
+	"encoding/json"
+	"log"
 
+	"example.com/m/v2/models"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -18,19 +21,25 @@ func InitDB() {
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(5)
 	createTables()
+	createDefaultTenant()
+
 }
 
 func createTables() {
-	
+
 	createUsersTable := `
-	CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		full_name TEXT NOT NULL,
-		email TEXT NOT NULL UNIQUE,
-		mobile_number TEXT,
-		password_hash TEXT NOT NULL,
-		date_of_birth TEXT
-	);`
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tenant_id INTEGER NOT NULL, -- ADD THIS LINE
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    mobile_number TEXT,
+    password_hash TEXT NOT NULL,
+    date_of_birth TEXT,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
+    -- Make the email unique only within the scope of a tenant
+    UNIQUE (tenant_id, email)
+);`
 
 	_, err := DB.Exec(createUsersTable)
 	if err != nil {
@@ -49,5 +58,52 @@ func createTables() {
 	_, err = DB.Exec(createPasswordResetsTable)
 	if err != nil {
 		panic("Failed to create password_reset_tokens table")
+	}
+	createTenantsTable := `
+	CREATE TABLE IF NOT EXISTS tenants (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		-- The config column will store the TenantConfig struct as a JSON string
+		config TEXT NOT NULL
+	);`
+
+	_, err = DB.Exec(createTenantsTable)
+	if err != nil {
+		panic("Failed to create tenants table: " + err.Error())
+	}
+}
+func createDefaultTenant() {
+	var count int
+	err := DB.QueryRow("SELECT COUNT(*) FROM tenants").Scan(&count)
+	if err != nil {
+		panic("Failed to check for tenants: " + err.Error())
+	}
+
+	if count == 0 {
+		defaultConfig := models.TenantConfig{
+			Name:         "دوریوو",
+			Logo:         "/assets/logos/PWALogo-192x192.png",
+			Plan:         models.PlanPro,
+			MultiTheme:   true,
+			DefaultTheme: models.ThemeLight,
+			Features:     json.RawMessage(`{}`),
+			ThemeColors: models.ThemeColors{
+				Primary:    "163 177 138",
+				Primary2:   "230 240 230",
+				Secondary:  "45 106 79",
+				Secondary2: "205 234 192",
+			},
+		}
+
+		configJSON, err := json.Marshal(defaultConfig)
+		if err != nil {
+			panic("Failed to marshal default tenant config: " + err.Error())
+		}
+
+		query := `INSERT INTO tenants (config) VALUES (?)`
+		_, err = DB.Exec(query, string(configJSON))
+		if err != nil {
+			panic("Failed to create default tenant: " + err.Error())
+		}
+		log.Println(" Default tenant created successfully!")
 	}
 }
