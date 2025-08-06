@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	db "example.com/m/v2/DB"
-	"example.com/m/v2/controllers"
+	db "github.com/AryaTabani/Dorivo/DB"
+	"github.com/AryaTabani/Dorivo/controllers"
 	"github.com/gin-gonic/gin"
 )
 

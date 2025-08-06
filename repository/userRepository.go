@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	db "example.com/m/v2/DB"
-	"example.com/m/v2/models"
+	db "github.com/AryaTabani/Dorivo/DB"
+	"github.com/AryaTabani/Dorivo/models"
 )
 
 func CreateUser(ctx context.Context, user *models.User) error {
 	query := `INSERT INTO users (tenant_id, full_name, email, mobile_number, password_hash, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)`
-		_, err := db.DB.ExecContext(ctx, query, user.TenantID, user.Full_name, user.Email, user.Mobile_number, user.Password_hash, user.Date_of_birth)
+	_, err := db.DB.ExecContext(ctx, query, user.TenantID, user.Full_name, user.Email, user.Mobile_number, user.Password_hash, user.Date_of_birth)
 	return err
 }
 

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"example.com/m/v2/models"
+	"github.com/AryaTabani/Dorivo/models"
 	_ "github.com/mattn/go-sqlite3"
 )
 

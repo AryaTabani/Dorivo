@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"example.com/m/v2/models"
-	"example.com/m/v2/repository"
+	"github.com/AryaTabani/Dorivo/models"
+	"github.com/AryaTabani/Dorivo/repository"
 )
 
 var ErrTenantNotFound = errors.New("tenant not found")

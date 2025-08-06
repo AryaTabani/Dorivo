@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"example.com/m/v2/models"
-	"example.com/m/v2/repository"
+	"github.com/AryaTabani/Dorivo/models"
+	"github.com/AryaTabani/Dorivo/repository"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )

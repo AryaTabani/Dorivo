@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"example.com/m/v2/models"
-	"example.com/m/v2/services"
+	"github.com/AryaTabani/Dorivo/models"
+	"github.com/AryaTabani/Dorivo/services"
 	"github.com/gin-gonic/gin"
 )
 

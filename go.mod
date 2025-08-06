@@ -1,4 +1,4 @@
-module example.com/m/v2
+module github.com/AryaTabani/Dorivo
 
 go 1.24.5
 

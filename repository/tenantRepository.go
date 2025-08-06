@@ -5,19 +5,19 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	db "example.com/m/v2/DB"
-	"example.com/m/v2/models"
+	db "github.com/AryaTabani/Dorivo/DB"
+	"github.com/AryaTabani/Dorivo/models"
 )
 
 func GetTenantByID(ctx context.Context, id string) (*models.Tenant, error) {
 	var tenant models.Tenant
-	var configJSON string 
+	var configJSON string
 
 	query := "SELECT id, config FROM tenants WHERE name = ?"
 	err := db.DB.QueryRowContext(ctx, query, id).Scan(&tenant.ID, &configJSON)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil 
+			return nil, nil
 		}
 		return nil, err
 	}
