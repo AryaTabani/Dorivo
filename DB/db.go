@@ -22,7 +22,6 @@ func InitDB() {
 	DB.SetMaxIdleConns(5)
 	createTables()
 	createDefaultTenant()
-
 }
 
 func createTables() {
@@ -30,14 +29,13 @@ func createTables() {
 	createUsersTable := `
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tenant_id INTEGER NOT NULL, -- ADD THIS LINE
+    tenant_id TEXT NOT NULL, 
     full_name TEXT NOT NULL,
     email TEXT NOT NULL,
     mobile_number TEXT,
     password_hash TEXT NOT NULL,
     date_of_birth TEXT,
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
-    -- Make the email unique only within the scope of a tenant
     UNIQUE (tenant_id, email)
 );`
 
@@ -60,11 +58,11 @@ CREATE TABLE IF NOT EXISTS users (
 		panic("Failed to create password_reset_tokens table")
 	}
 	createTenantsTable := `
-	CREATE TABLE IF NOT EXISTS tenants (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		-- The config column will store the TenantConfig struct as a JSON string
-		config TEXT NOT NULL
-	);`
+    CREATE TABLE IF NOT EXISTS tenants (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE, 
+        config TEXT NOT NULL
+    );`
 
 	_, err = DB.Exec(createTenantsTable)
 	if err != nil {
@@ -72,10 +70,11 @@ CREATE TABLE IF NOT EXISTS users (
 	}
 }
 func createDefaultTenant() {
+	defaultTenant := "localhost:3000"
 	var count int
-	err := DB.QueryRow("SELECT COUNT(*) FROM tenants").Scan(&count)
+	err := DB.QueryRow("SELECT COUNT(*) FROM tenants WHERE name = ?", defaultTenant).Scan(&count)
 	if err != nil {
-		panic("Failed to check for tenants: " + err.Error())
+		panic("Failed to check for default tenant: " + err.Error())
 	}
 
 	if count == 0 {
@@ -99,8 +98,8 @@ func createDefaultTenant() {
 			panic("Failed to marshal default tenant config: " + err.Error())
 		}
 
-		query := `INSERT INTO tenants (config) VALUES (?)`
-		_, err = DB.Exec(query, string(configJSON))
+		query := `INSERT INTO tenants (name, config) VALUES (?, ?)`
+		_, err = DB.Exec(query, defaultTenant, string(configJSON))
 		if err != nil {
 			panic("Failed to create default tenant: " + err.Error())
 		}
