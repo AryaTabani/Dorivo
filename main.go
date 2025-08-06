@@ -10,7 +10,7 @@ import (
 func main() {
 	db.InitDB()
 	router := gin.Default()
-	router.GET("/config/:tenantId", controllers.GetTenantConfigHandler())
+	router.GET("/tenant/:tenantId", controllers.GetTenantConfigHandler())
 	router.POST("/register", controllers.RegisterHandler())
 	router.POST("/login", controllers.LoginHandler())
 
