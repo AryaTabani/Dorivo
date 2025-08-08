@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS users (
 	}
 }
 func createDefaultTenant() {
-	defaultTenant := "localhost:3000"
+	defaultTenant := "localhost1"
 	var count int
 	err := DB.QueryRow("SELECT COUNT(*) FROM tenants WHERE name = ?", defaultTenant).Scan(&count)
 	if err != nil {
