@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/AryaTabani/Dorivo/models"
 	"github.com/AryaTabani/Dorivo/services"
 	"github.com/gin-gonic/gin"
 )
@@ -14,13 +15,27 @@ func GetTenantConfigHandler() gin.HandlerFunc {
 		config, err := services.GetTenantConfig(c.Request.Context(), id)
 		if err != nil {
 			if errors.Is(err, services.ErrTenantNotFound) {
-				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				response := models.APIResponse[any]{
+					Success: false,
+					Error:   err.Error(),
+				}
+				c.JSON(http.StatusNotFound, response)
 				return
 			}
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "could not retrieve tenant configuration"})
+
+			response := models.APIResponse[any]{
+				Success: false,
+				Error:   "Could not retrieve tenant configuration.",
+			}
+			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
 
-		c.JSON(http.StatusOK, config)
+		response := models.APIResponse[models.TenantConfig]{
+			Success: true,
+			Message: "Configuration fetched successfully.",
+			Data:    *config,
+		}
+		c.JSON(http.StatusOK, response)
 	}
 }
