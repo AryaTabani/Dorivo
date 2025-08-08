@@ -25,6 +25,17 @@ func InitDB() {
 }
 
 func createTables() {
+	createTenantsTable := `
+    CREATE TABLE IF NOT EXISTS tenants (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE, 
+        config TEXT NOT NULL
+    );`
+
+	_, err := DB.Exec(createTenantsTable)
+	if err != nil {
+		panic("Failed to create tenants table: " + err.Error())
+	}
 
 	createUsersTable := `
 CREATE TABLE IF NOT EXISTS users (
@@ -39,7 +50,7 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE (tenant_id, email)
 );`
 
-	_, err := DB.Exec(createUsersTable)
+	_, err = DB.Exec(createUsersTable)
 	if err != nil {
 		panic("Failed to create users table")
 	}
@@ -57,17 +68,7 @@ CREATE TABLE IF NOT EXISTS users (
 	if err != nil {
 		panic("Failed to create password_reset_tokens table")
 	}
-	createTenantsTable := `
-    CREATE TABLE IF NOT EXISTS tenants (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE, 
-        config TEXT NOT NULL
-    );`
-
-	_, err = DB.Exec(createTenantsTable)
-	if err != nil {
-		panic("Failed to create tenants table: " + err.Error())
-	}
+	
 }
 func createDefaultTenant() {
 	defaultTenant := "localhost:3000"
