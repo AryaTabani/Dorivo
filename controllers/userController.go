@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
+
 	"net/http"
 
 	"github.com/AryaTabani/Dorivo/models"
@@ -11,14 +13,14 @@ import (
 
 func RegisterHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantID := c.GetHeader("tenantid")
-
+		tenantID := c.Param("tenantId")
+		fmt.Println("Tenant ID from para:", tenantID)
 		var payload models.RegisterPayload
 		if err := c.ShouldBindJSON(&payload); err != nil {
 			response := models.APIResponse[any]{
-					Success: false,
-					Error:   "Invalid request body: " + err.Error(),
-				}
+				Success: false,
+				Error:   "Invalid request body: " + err.Error(),
+			}
 			c.JSON(http.StatusBadRequest, response)
 			return
 		}
@@ -33,13 +35,13 @@ func RegisterHandler() gin.HandlerFunc {
 				return
 			}
 			response := models.APIResponse[any]{
-					Success: false,
-					Error:   "Failed to create user",
-				}
+				Success: false,
+				Error:   "Failed to create user",
+			}
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
-         response := models.APIResponse[any]{
+		response := models.APIResponse[any]{
 			Success: true,
 			Message: "User created successfully",
 		}
@@ -49,15 +51,15 @@ func RegisterHandler() gin.HandlerFunc {
 
 func LoginHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantID := c.GetHeader("tenantId")
+		tenantID := c.Param("tenantId")
 
 		var payload models.LoginPayload
 		if err := c.ShouldBindJSON(&payload); err != nil {
 			response := models.APIResponse[any]{
-					Success: false,
-					Error:  "Invalid request body: " + err.Error(),
-				}
-			c.JSON(http.StatusBadRequest,response)
+				Success: false,
+				Error:   "Invalid request body: " + err.Error(),
+			}
+			c.JSON(http.StatusBadRequest, response)
 			return
 		}
 
@@ -66,22 +68,22 @@ func LoginHandler() gin.HandlerFunc {
 			if errors.Is(err, services.ErrInvalidCredentials) {
 				response := models.APIResponse[any]{
 					Success: false,
-					Error:  err.Error(),
+					Error:   err.Error(),
 				}
-				c.JSON(http.StatusUnauthorized,response)
+				c.JSON(http.StatusUnauthorized, response)
 				return
 			}
 			response := models.APIResponse[any]{
-					Success: false,
-					Error:  "Login failed",
-				}
+				Success: false,
+				Error:   "Login failed",
+			}
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
-        response := models.APIResponse[any]{
+		response := models.APIResponse[any]{
 			Success: true,
-			Message: "token: "+token,
+			Message: "token: " + token,
 		}
-		c.JSON(http.StatusOK,response)
+		c.JSON(http.StatusOK, response)
 	}
 }
