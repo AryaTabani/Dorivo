@@ -11,7 +11,7 @@ import (
 
 func RegisterHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantID := c.GetHeader("X-Tenant-ID")
+		tenantID := c.GetHeader("tenantid")
 
 		var payload models.RegisterPayload
 		if err := c.ShouldBindJSON(&payload); err != nil {
@@ -22,7 +22,6 @@ func RegisterHandler() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, response)
 			return
 		}
-
 		_, err := services.RegisterUser(c.Request.Context(), tenantID, &payload)
 		if err != nil {
 			if errors.Is(err, services.ErrUserExists) {
@@ -50,7 +49,7 @@ func RegisterHandler() gin.HandlerFunc {
 
 func LoginHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantID := c.GetHeader("X-Tenant-ID")
+		tenantID := c.GetHeader("tenantId")
 
 		var payload models.LoginPayload
 		if err := c.ShouldBindJSON(&payload); err != nil {

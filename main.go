@@ -10,8 +10,8 @@ func main() {
 	db.InitDB()
 	router := gin.Default()
 	router.GET("/tenant/:tenantId", controllers.GetTenantConfigHandler())
-	router.POST("/register", controllers.RegisterHandler())
-	router.POST("/login", controllers.LoginHandler())
+	router.POST("/:tenantId/register", controllers.RegisterHandler())
+	router.POST("/:tenantId/login", controllers.LoginHandler())
 
 	router.Run(":8080")
 }
