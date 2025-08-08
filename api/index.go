@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"net/http"
@@ -8,17 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var router *gin.Engine
-
-func init() {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	db.InitDB()
 
-	router = gin.Default()
+	router := gin.Default()
+
 	router.GET("/tenant/:tenantId", controllers.GetTenantConfigHandler())
 	router.POST("/register", controllers.RegisterHandler())
 	router.POST("/login", controllers.LoginHandler())
-
-}
-func Handler(w http.ResponseWriter, r *http.Request) {
+	
 	router.ServeHTTP(w, r)
 }
