@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS users (
     mobile_number TEXT,
     password_hash TEXT NOT NULL,
     date_of_birth TEXT,
-    FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,
     UNIQUE (tenant_id, email)
 );`
 
