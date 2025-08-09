@@ -71,7 +71,7 @@ func createTables() {
 	}
 }
 func createDefaultTenant() {
-	defaultTenant := "localhost1"
+	defaultTenant := "localhost:3000"
 	var count int
 	err := DB.QueryRow("SELECT COUNT(*) FROM tenants WHERE name = ?", defaultTenant).Scan(&count)
 	if err != nil {
