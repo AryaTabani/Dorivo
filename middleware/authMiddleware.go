@@ -20,7 +20,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-		if tokenString == authHeader { 
+		if tokenString == authHeader {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token format"})
 			return
 		}
@@ -34,6 +34,15 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Next()
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			userID := int64(claims["sub"].(float64))
+			tenantID := claims["tid"].(string)
+			c.Set("userID", userID)
+			c.Set("tenantID", tenantID)
+
+			c.Next()
+		} else {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+		}
 	}
 }
