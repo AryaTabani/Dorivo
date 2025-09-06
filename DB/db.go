@@ -13,8 +13,8 @@ var DB *sql.DB
 
 func InitDB() {
 	var err error
-	DB, err = sql.Open("sqlite3", "/tmp/api.db")
-	//DB, err = sql.Open("sqlite3", "api.db")
+	//DB, err = sql.Open("sqlite3", "/tmp/api.db")
+	DB, err = sql.Open("sqlite3", "api.db")
 
 	if err != nil {
 		panic("Could not connect to database")
@@ -69,6 +69,38 @@ func createTables() {
 	if err != nil {
 		panic("Failed to create password_reset_tokens table: " + err.Error())
 	}
+
+	createOrdersTabale :=`
+	CREATE TABLE IF NOT EXISTS orders (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER NOT NULL,
+	tenant_id TEXT NOT NULL,
+	status TEXT NOT NULL,
+	total_price REAL NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (user_id) REFERENCES users(id),
+	FOREIGN KEY (tenant_id) REFERENCES tenants(name)
+	);`
+	_, err = DB.Exec(createOrdersTabale)
+	if err != nil {
+		panic("Failed to create orders table: " + err.Error())
+	}
+	createOrderItemsTable:= `
+	CREATE TABLE IF NOT EXISTS order_items(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	order_id INTEGER NOT NULL,
+	item_name TEXT NOT NULL,
+	quantity INTEGER NOT NULL,
+	price REAL NOT NULL,
+	image_url TEXT,
+	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+	);`
+
+	_,err = DB.Exec(createOrderItemsTable)
+	if err != nil {
+		panic("Failed to create password_reset_tokens table: " + err.Error())
+	}
+
 }
 func createDefaultTenant() {
 	defaultTenant := "localhost:3000"
