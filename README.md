@@ -2,7 +2,6 @@
 
 A robust backend boilerplate built in Go, designed for multi-tenant applications. This project features a clean, layered architecture, secure JWT-based authentication for users, and a dynamic configuration system where each tenant can have a unique appearance and feature set.
 
-![Project Architecture Diagram](https://storage.googleapis.com/gweb-cloud-storage-images/generative-ai/rest/layered-architecture-diagram.png)
 
 ---
 
