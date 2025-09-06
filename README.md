@@ -23,11 +23,4 @@ A robust backend boilerplate built in Go, designed for multi-tenant applications
 * **Database:** [SQLite](https://www.sqlite.org/) (using `mattn/go-sqlite3`)
 * **Authentication:** `golang-jwt/jwt` for JSON Web Tokens
 * **Password Hashing:** `golang.org/x/crypto/bcrypt`
-
 ---
-
-
-
-## Project Structure
-
-The project follows a standard layered architecture to keep code organized and maintainable.
