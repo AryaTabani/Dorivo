@@ -70,7 +70,7 @@ func createTables() {
 		panic("Failed to create password_reset_tokens table: " + err.Error())
 	}
 
-	createOrdersTabale :=`
+	createOrdersTabale := `
 	CREATE TABLE IF NOT EXISTS orders (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	user_id INTEGER NOT NULL,
@@ -85,7 +85,7 @@ func createTables() {
 	if err != nil {
 		panic("Failed to create orders table: " + err.Error())
 	}
-	createOrderItemsTable:= `
+	createOrderItemsTable := `
 	CREATE TABLE IF NOT EXISTS order_items(
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	order_id INTEGER NOT NULL,
@@ -96,11 +96,39 @@ func createTables() {
 	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 	);`
 
-	_,err = DB.Exec(createOrderItemsTable)
+	_, err = DB.Exec(createOrderItemsTable)
 	if err != nil {
 		panic("Failed to create password_reset_tokens table: " + err.Error())
 	}
-
+	createCancellationTable := `
+	CREATE TABLE IF NOT EXISTS cancellations (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		order_id INTEGER NOT NULL,
+		user_id INTEGER NOT NULL,
+		reason TEXT,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
+	_, err = DB.Exec(createCancellationTable)
+	if err != nil {
+		panic("Failed to create cancellations table: " + err.Error())
+	}
+	createReviewsTable := `
+	CREATE TABLE IF NOT EXISTS reviews (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		order_id INTEGER NOT NULL,
+		user_id INTEGER NOT NULL,
+		rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+		comment TEXT,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
+	_, err = DB.Exec(createReviewsTable)
+	if err != nil {
+		panic("Failed to create reviews table: " + err.Error())
+	}
 }
 func createDefaultTenant() {
 	defaultTenant := "localhost:3000"
