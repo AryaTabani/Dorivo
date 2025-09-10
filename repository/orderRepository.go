@@ -34,3 +34,5 @@ func GetOrdersByUserID(ctx context.Context, userID int64, status string) ([]mode
 	}
 	return orders, nil
 }
+
+func GetOrderByIdAndUserID(ctx context.Context, orderID, userID int64) (*models.order, error) {}
