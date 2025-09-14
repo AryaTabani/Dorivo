@@ -18,8 +18,9 @@ func main() {
 	userAuthGroup.Use(middleware.AuthMiddleware())
 	{
 		userAuthGroup.GET("/orders", controllers.GetMyOrdersHandler())
-		// userAuthGroup.POST("/orders/:orderId/cancel", controllers.CancelOrderHandler())
-		// userAuthGroup.POST("/orders/:orderId/review", controllers.LeaveReviewHandler())
+		userAuthGroup.POST("/orders/:orderId/cancel", controllers.CancelOrderHandler())
+		userAuthGroup.POST("/orders/:orderId/review", controllers.LeaveReviewHandler())
+
 	}
 
 	router.Run(":8080")
