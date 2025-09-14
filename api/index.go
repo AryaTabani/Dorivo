@@ -21,8 +21,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	userAuthGroup.Use(middleware.AuthMiddleware())
 	{
 		userAuthGroup.GET("/orders", controllers.GetMyOrdersHandler())
-		// userAuthGroup.POST("/orders/:orderId/cancel", controllers.CancelOrderHandler())
-		// userAuthGroup.POST("/orders/:orderId/review", controllers.LeaveReviewHandler())
+		userAuthGroup.POST("/orders/:orderId/cancel", controllers.CancelOrderHandler())
+		userAuthGroup.POST("/orders/:orderId/review", controllers.LeaveReviewHandler())
 	}
 	router.ServeHTTP(w, r)
 }
