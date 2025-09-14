@@ -2,6 +2,15 @@ package models
 
 import "time"
 
+type Order struct {
+	ID         int64
+	UserID     int64
+	TenantID   string
+	Status     string
+	TotalPrice float64
+	CreatedAt  time.Time
+}
+
 type OrderSummaryView struct {
 	ID              int64     `json:"id"`
 	TotalPrice      float64   `json:"total_price"`
@@ -13,5 +22,5 @@ type OrderSummaryView struct {
 }
 
 type CancelOrderPayload struct {
-	Reason string `json:"reason" binding:"required"`
+	Reason string `json:"reason" binding:"max=255"`
 }
