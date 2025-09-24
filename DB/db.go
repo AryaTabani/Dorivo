@@ -39,23 +39,35 @@ func createTables() {
 	}
 
 	createUsersTable := `
-	CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		tenant_id TEXT NOT NULL, 
-		full_name TEXT NOT NULL,
-		email TEXT NOT NULL,
-		mobile_number TEXT,
-		password_hash TEXT NOT NULL,
-		date_of_birth TEXT,
-		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,
-		UNIQUE (tenant_id, email)
-	);`
+    CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tenant_id TEXT NOT NULL, 
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    mobile_number TEXT,
+    password_hash TEXT NOT NULL,
+    date_of_birth TEXT,
+    avatar_url TEXT, 
+    FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,
+    UNIQUE (tenant_id, email)
+);`
 
 	_, err = DB.Exec(createUsersTable)
 	if err != nil {
 		panic("Failed to create users table: " + err.Error())
 	}
-
+	createUserAddressesTable := `
+CREATE TABLE IF NOT EXISTS user_addresses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    address TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);`
+	_, err = DB.Exec(createUserAddressesTable)
+	if err != nil {
+		panic("Failed to create user_addresses table: " + err.Error())
+	}
 	createPasswordResetsTable := `
 	CREATE TABLE IF NOT EXISTS password_reset_tokens (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -128,6 +140,22 @@ func createTables() {
 	_, err = DB.Exec(createReviewsTable)
 	if err != nil {
 		panic("Failed to create reviews table: " + err.Error())
+	}
+	createPaymentMethodsTable := `
+CREATE TABLE IF NOT EXISTS payment_methods (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    processor_token TEXT NOT NULL UNIQUE,
+    card_brand TEXT NOT NULL,
+    last_four TEXT NOT NULL,
+    expiry_month INTEGER NOT NULL,
+    expiry_year INTEGER NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);`
+	_, err = DB.Exec(createPaymentMethodsTable)
+	if err != nil {
+		panic("Failed to create paymentsMethod table: " + err.Error())
 	}
 }
 func createDefaultTenant() {
