@@ -87,3 +87,40 @@ func LoginHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, response)
 	}
 }
+func GetProfileHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.GetInt64("userID")
+
+		user, err := services.GetProfile(c.Request.Context(), userID)
+		if err != nil {
+			if errors.Is(err, services.ErrUserNotFound) {
+				c.JSON(http.StatusNotFound, models.APIResponse[any]{Success: false, Error: err.Error()})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to retrieve profile"})
+			return
+		}
+
+		c.JSON(http.StatusOK, models.APIResponse[*models.User]{Success: true, Data: user})
+	}
+}
+
+func UpdateProfileHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.GetInt64("userID")
+
+		var payload models.UpdateProfilePayload
+		if err := c.ShouldBindJSON(&payload); err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse[any]{Success: false, Error: "Invalid request body: " + err.Error()})
+			return
+		}
+
+		err := services.UpdateProfile(c.Request.Context(), userID, &payload)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to update profile"})
+			return
+		}
+
+		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Profile updated successfully"})
+	}
+}
