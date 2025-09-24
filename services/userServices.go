@@ -18,6 +18,7 @@ var jwtSecret = []byte(os.Getenv("JWT_SECRET_KEY"))
 var (
 	ErrInvalidCredentials = errors.New("invalid email or password")
 	ErrUserExists         = errors.New("a user with this email address already exists")
+	ErrUserNotFound       = errors.New("user not found")
 )
 
 func RegisterUser(ctx context.Context, tenantID string, payload *models.RegisterPayload) (*models.User, error) {
@@ -82,4 +83,18 @@ func generateUserToken(userID int64, tenantID string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+func GetProfile(ctx context.Context, userID int64) (*models.User, error) {
+	user, err := repository.GetUserByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+	return user, nil
+}
+
+func UpdateProfile(ctx context.Context, userID int64, payload *models.UpdateProfilePayload) error {
+	return repository.UpdateUser(ctx, userID, payload)
 }
