@@ -40,3 +40,26 @@ func UpdateUserPassword(ctx context.Context, userID int64, newPasswordHash strin
 	_, err := db.DB.ExecContext(ctx, query, newPasswordHash, userID)
 	return err
 }
+func UpdateUser(ctx context.Context, userID int64, payload *models.UpdateProfilePayload) error {
+	query := `UPDATE users SET full_name = ?, mobile_number = ?, date_of_birth = ?, avatar_url = ? WHERE id = ?`
+	_, err := db.DB.ExecContext(ctx, query, payload.Full_name, payload.Mobile_number, payload.Date_of_birth, payload.Avatar_url, userID)
+	return err
+}
+
+func GetUserByID(ctx context.Context, userID int64) (*models.User, error) {
+	var user models.User
+	query := `SELECT id, full_name, email, mobile_number, date_of_birth, avatar_url, tenant_id FROM users WHERE id = ?`
+	err := db.DB.QueryRowContext(ctx, query, userID).Scan(
+		&user.ID,
+		&user.Full_name,
+		&user.Email,
+		&user.Mobile_number,
+		&user.Date_of_birth,
+		&user.Avatar_url,
+		&user.TenantID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
