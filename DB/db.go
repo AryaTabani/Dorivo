@@ -157,7 +157,21 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 	if err != nil {
 		panic("Failed to create paymentsMethod table: " + err.Error())
 	}
+	createfraqsTable := `
+	CREATE TABLE IF NOT EXISTS faqs (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		tenant_id TEXT NOT NULL,
+		category TEXT NOT NULL,
+		question TEXT NOT NULL,
+		answer TEXT NOT NULL,
+		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createfraqsTable)
+	if err != nil {
+		panic("Failed to create faqs table: " + err.Error())
+	}
 }
+
 func createDefaultTenant() {
 	defaultTenant := "localhost:3000"
 	var count int
@@ -179,6 +193,13 @@ func createDefaultTenant() {
 				Primary2:   "230 240 230",
 				Secondary:  "45 106 79",
 				Secondary2: "205 234 192",
+			},
+			ContactInfo: models.ContactInfo{
+				CustomerService: "support@example.com",
+				Website:         "https://www.example.com",
+				Whatsapp:        "+1234567890",
+				Facebook:        "https://facebook.com/example",
+				Instagram:       "https://instagram.com/example",
 			},
 		}
 
