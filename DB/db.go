@@ -48,6 +48,7 @@ func createTables() {
     password_hash TEXT NOT NULL,
     date_of_birth TEXT,
     avatar_url TEXT, 
+	notifiction_preference TEXT,
     FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,
     UNIQUE (tenant_id, email)
 );`
