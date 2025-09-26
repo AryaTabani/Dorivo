@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"encoding/json"
 	"time"
 
 	db "github.com/AryaTabani/Dorivo/DB"
@@ -48,7 +50,9 @@ func UpdateUser(ctx context.Context, userID int64, payload *models.UpdateProfile
 
 func GetUserByID(ctx context.Context, userID int64) (*models.User, error) {
 	var user models.User
-	query := `SELECT id, full_name, email, mobile_number, date_of_birth, avatar_url, tenant_id FROM users WHERE id = ?`
+	var prefsJSON sql.NullString
+
+	query := `SELECT id, full_name, email, mobile_number, date_of_birth, avatar_url, tenant_id, password_hash, notification_preferences FROM users WHERE id = ?`
 	err := db.DB.QueryRowContext(ctx, query, userID).Scan(
 		&user.ID,
 		&user.Full_name,
@@ -57,9 +61,31 @@ func GetUserByID(ctx context.Context, userID int64) (*models.User, error) {
 		&user.Date_of_birth,
 		&user.Avatar_url,
 		&user.TenantID,
+		&user.Password_hash,
+		&prefsJSON,
 	)
 	if err != nil {
 		return nil, err
 	}
+	if prefsJSON.Valid {
+		err = json.Unmarshal([]byte(prefsJSON.String), &user.NotificationPreferences)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return &user, nil
+}
+func UpdateNotificationPreferences(ctx context.Context, userID int64, prefs *models.NotificationPreferences) error {
+	prefsJSON, err := json.Marshal(prefs)
+	if err != nil {
+		return err
+	}
+	query := `UPDATE users SET notification_preferences = ? WHERE id = ?`
+	_, err = db.DB.ExecContext(ctx, query, prefsJSON, userID)
+	return err
+}
+func DeleteUserByID(ctx context.Context, userID int64) error {
+	query := `DELETE FROM users WHERE id = ?`
+	_, err := db.DB.ExecContext(ctx, query, userID)
+	return err
 }
