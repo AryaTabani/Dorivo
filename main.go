@@ -15,6 +15,7 @@ func main() {
 	router.GET("/tenant/:tenantId", controllers.GetTenantConfigHandler())
 	router.POST("/:tenantId/register", controllers.RegisterHandler())
 	router.POST("/:tenantId/login", controllers.LoginHandler())
+	router.GET("/:tenantId/faqs", controllers.GetFAQsHandler())
 
 	userAuthGroup := router.Group("/")
 	userAuthGroup.Use(middleware.AuthMiddleware())
