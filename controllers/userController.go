@@ -124,7 +124,7 @@ func UpdateProfileHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Profile updated successfully"})
 	}
 }
-func GetNotificationsHandler() gin.HandlerFunc {
+func GetNotificationsSettingHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
 		user, err := services.GetProfile(c.Request.Context(), userID)
