@@ -98,3 +98,26 @@ func GetProfile(ctx context.Context, userID int64) (*models.User, error) {
 func UpdateProfile(ctx context.Context, userID int64, payload *models.UpdateProfilePayload) error {
 	return repository.UpdateUser(ctx, userID, payload)
 }
+
+func UpdateNotificationPreferences(ctx context.Context, userID int64, prefs *models.NotificationPreferences) error {
+	return repository.UpdateNotificationPreferences(ctx, userID, prefs)
+}
+
+func ChangePassword(ctx context.Context, userID int64, payload *models.ChangePasswordPayload) error {
+	user, err := repository.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password_hash), []byte(payload.CurrentPassword))
+	if err != nil {
+		return ErrInvalidCredentials
+	}
+	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("could not hash new password: %w", err)
+	}
+	return repository.UpdateUserPassword(ctx, userID, string(newHashedPassword))
+}
+func DeleteAccount(ctx context.Context, userID int64) error {
+	return repository.DeleteUserByID(ctx, userID)
+}
