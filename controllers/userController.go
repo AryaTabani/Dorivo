@@ -124,3 +124,62 @@ func UpdateProfileHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Profile updated successfully"})
 	}
 }
+func GetNotificationsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.GetInt64("userID")
+		user, err := services.GetProfile(c.Request.Context(), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to retrieve profile"})
+			return
+		}
+		c.JSON(http.StatusOK, models.APIResponse[models.NotificationPreferences]{Success: true, Data: user.NotificationPreferences})
+	}
+}
+
+func UpdateNotificationSettingsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.GetInt64("userID")
+		var payload models.NotificationPreferences
+		if err := c.ShouldBindJSON(&payload); err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse[any]{Success: false, Error: "Invalid request body: " + err.Error()})
+			return
+		}
+		err := services.UpdateNotificationPreferences(c.Request.Context(), userID, &payload)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to update notification settings"})
+			return
+		}
+		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Notification settings updated successfully"})
+	}
+}
+func ChangePasswordHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.GetInt64("userID")
+		var payload models.ChangePasswordPayload
+		if err := c.ShouldBindJSON(&payload); err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse[any]{Success: false, Error: "Invalid request body: " + err.Error()})
+			return
+		}
+		err := services.ChangePassword(c.Request.Context(), userID, &payload)
+		if err != nil {
+			if errors.Is(err, services.ErrInvalidCredentials) {
+				c.JSON(http.StatusUnauthorized, models.APIResponse[any]{Success: false, Error: "The current password is incorrect"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to change password"})
+			return
+		}
+		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Password changed successfully"})
+	}
+}
+func DeleteAccountHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.GetInt64("userID")
+		err := services.DeleteAccount(c.Request.Context(), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to delete account"})
+			return
+		}
+		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Account deleted successfully"})
+	}
+}
