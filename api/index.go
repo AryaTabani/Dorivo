@@ -36,6 +36,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		userAuthGroup.GET("/orders", controllers.GetMyOrdersHandler())
 		userAuthGroup.POST("/orders/:orderId/cancel", controllers.CancelOrderHandler())
 		userAuthGroup.POST("/orders/:orderId/review", controllers.LeaveReviewHandler())
+
+		userAuthGroup.GET("/profile/notification-settings", controllers.GetNotificationsSettingHandler())
+		userAuthGroup.PUT("/profile/notification-settings", controllers.UpdateNotificationSettingsHandler())
+		userAuthGroup.PUT("/profile/change-password", controllers.ChangePasswordHandler())
+		userAuthGroup.DELETE("/profile", controllers.DeleteAccountHandler())
 	}
 	router.ServeHTTP(w, r)
 }
