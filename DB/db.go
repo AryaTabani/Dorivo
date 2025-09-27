@@ -171,6 +171,23 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 	if err != nil {
 		panic("Failed to create faqs table: " + err.Error())
 	}
+
+	createNotificationsTable := `
+	CREATE TABLE IF NOT EXISTS notifications (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER NOT NULL,
+		title TEXT NOT NULL,
+		type TEXT NOT NULL,
+		is_read BOOLEAN DEFAULT FALSE,
+		metadata TEXT,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createNotificationsTable)
+	if err != nil {
+		panic("Failed to create notifications table: " + err.Error())
+	}
+
 }
 
 func createDefaultTenant() {
