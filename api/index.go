@@ -18,6 +18,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	router.POST("/:tenantId/register", controllers.RegisterHandler())
 	router.POST("/:tenantId/login", controllers.LoginHandler())
 	router.GET("/:tenantId/faqs", controllers.GetFAQsHandler())
+	router.GET("/:tenantId/products", controllers.SearchProductsHandler())
+	router.GET("/:tenantId/tags", controllers.GetTagsHandler())
 
 	userAuthGroup := router.Group("/")
 	userAuthGroup.Use(middleware.AuthMiddleware())
