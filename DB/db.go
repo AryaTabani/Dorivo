@@ -187,6 +187,48 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 	if err != nil {
 		panic("Failed to create notifications table: " + err.Error())
 	}
+	createProductsTable := `
+	CREATE TABLE IF NOT EXISTS products (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		tenant_id TEXT NOT NULL,
+		name TEXT NOT NULL,
+		description TEXT,
+		price REAL NOT NULL,
+		rating REAL DEFAULT 0,
+		image_url TEXT,
+		main_category TEXT NOT NULL,
+		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createProductsTable)
+	if err != nil {
+		panic("Failed to create products table: " + err.Error())
+	}
+
+	createTagsTable := `
+	CREATE TABLE IF NOT EXISTS tags (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		tenant_id TEXT NOT NULL,
+		name TEXT NOT NULL,
+		main_category TEXT NOT NULL,
+		UNIQUE (tenant_id, name),
+		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createTagsTable)
+	if err != nil {
+		panic("Failed to create tags table: " + err.Error())
+	}
+	createProductTagsTable := `
+	CREATE TABLE IF NOT EXISTS product_tags (
+		product_id INTEGER NOT NULL,
+		tag_id INTEGER NOT NULL,
+		PRIMARY KEY (product_id, tag_id),
+		FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+		FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE	
+	);`
+	_, err = DB.Exec(createProductTagsTable)
+	if err != nil {
+		panic("Failed to create product_tags table: " + err.Error())
+	}
 
 }
 
