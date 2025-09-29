@@ -101,3 +101,52 @@ func GetTags(ctx context.Context, tenantID string) ([]models.Tag, error) {
 	}
 	return tags, nil
 }
+
+func GetProductDetails(ctx context.Context, tenantID string, productID int64) (*models.Product, error) {
+	var p models.Product
+	productQuery := `SELECT id, name, description, price, rating, image_url, main_category FROM products WHERE id = ? AND tenant_id = ?`
+	err := db.DB.QueryRowContext(ctx, productQuery, productID, tenantID).Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Rating, &p.ImageURL, &p.MainCategory)
+	if err != nil {
+		return nil, err
+	}
+
+	optionsQuery := `
+		SELECT og.id, og.name, og.selection_type, o.id, o.name, o.price_modifier
+		FROM option_groups og
+		JOIN options o ON og.id = o.option_group_id
+		WHERE og.product_id = ?
+		ORDER BY og.id, o.id
+	`
+	rows, err := db.DB.QueryContext(ctx, optionsQuery, productID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	optionGroupsMap := make(map[int64]*models.OptionGroup)
+	for rows.Next() {
+		var ogID int64
+		var ogName, ogSelectionType string
+		var opt models.Option
+		if err := rows.Scan(&ogID, &ogName, &ogSelectionType, &opt.ID, &opt.Name, &opt.PriceModifier); err != nil {
+			return nil, err
+		}
+
+		if _, ok := optionGroupsMap[ogID]; !ok {
+			optionGroupsMap[ogID] = &models.OptionGroup{
+				ID:            ogID,
+				Name:          ogName,
+				SelectionType: ogSelectionType,
+				Options:       make([]models.Option, 0),
+			}
+		}
+		optionGroupsMap[ogID].Options = append(optionGroupsMap[ogID].Options, opt)
+	}
+
+	p.OptionGroups = make([]models.OptionGroup, 0, len(optionGroupsMap))
+	for _, group := range optionGroupsMap {
+		p.OptionGroups = append(p.OptionGroups, *group)
+	}
+
+	return &p, nil
+}
