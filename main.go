@@ -18,6 +18,7 @@ func main() {
 	router.GET("/:tenantId/faqs", controllers.GetFAQsHandler())
 	router.GET("/:tenantId/products", controllers.SearchProductsHandler())
 	router.GET("/:tenantId/tags", controllers.GetTagsHandler())
+	router.GET("/:tenantId/products/:productId", controllers.GetProductDetailsHandler())
 
 	userAuthGroup := router.Group("/")
 	userAuthGroup.Use(middleware.AuthMiddleware())
@@ -41,6 +42,14 @@ func main() {
 		userAuthGroup.PUT("/profile/notification-settings", controllers.UpdateNotificationSettingsHandler())
 		userAuthGroup.PUT("/profile/change-password", controllers.ChangePasswordHandler())
 		userAuthGroup.DELETE("/profile", controllers.DeleteAccountHandler())
+
+		userAuthGroup.GET("/notifications", controllers.GetNotificationsHandler())
+		userAuthGroup.PUT("/notifications/read", controllers.MarkReadHandler())
+
+		userAuthGroup.GET("/cart", controllers.GetCartHandler())
+		userAuthGroup.POST("/cart/items", controllers.AddToCartHandler())
+		userAuthGroup.PUT("/cart/items/:itemId", controllers.UpdateCartItemHandler())
+		userAuthGroup.DELETE("/cart/items/:itemId", controllers.RemoveCartItemHandler())
 	}
 
 	router.Run(":8080")
