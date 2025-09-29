@@ -229,6 +229,31 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 	if err != nil {
 		panic("Failed to create product_tags table: " + err.Error())
 	}
+	createOptionGroupsTable := `
+	CREATE TABLE IF NOT EXISTS option_groups (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		product_id INTEGER NOT NULL,
+		name TEXT NOT NULL,
+		selection_type TEXT NOT NULL,
+		FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createOptionGroupsTable)
+	if err != nil {
+		panic("Failed to create option_groups table: " + err.Error())
+	}
+	createOptionsTable := `
+	CREATE TABLE IF NOT EXISTS options (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		option_group_id INTEGER NOT NULL,
+		name TEXT NOT NULL,
+		price_modifier REAL NOT NULL DEFAULT 0,
+		FOREIGN KEY (option_group_id) REFERENCES option_groups(id) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createOptionsTable)
+
+	if err != nil {
+		panic("Failed to create options table: " + err.Error())
+	}
 
 }
 
