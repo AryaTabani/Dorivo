@@ -254,6 +254,41 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 	if err != nil {
 		panic("Failed to create options table: " + err.Error())
 	}
+	createCartsTable := `
+	CREATE TABLE IF NOT EXISTS carts (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER NOT NULL,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createCartsTable)
+	if err != nil {
+		panic("Failed to create carts table: " + err.Error())
+	}
+	createCartItemsTable := `
+	CREATE TABLE IF NOT EXISTS cart_items (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		cart_id INTEGER NOT NULL,
+		product_id INTEGER NOT NULL,
+		quantity INTEGER NOT NULL,
+		FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
+		FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createCartItemsTable)
+	if err != nil {
+		panic("Failed to create cart_items table: " + err.Error())
+	}
+	createCartItemOptionsTable := `
+	CREATE TABLE IF NOT EXISTS cart_item_options (
+		cart_item_id INTEGER NOT NULL,
+		option_id INTEGER NOT NULL,
+		PRIMARY KEY (cart_item_id, option_id),
+		FOREIGN KEY (cart_item_id) REFERENCES cart_items(id) ON DELETE CASCADE,
+		FOREIGN KEY (option_id) REFERENCES options(id) ON DELETE CASCADE
+	);`
+	_, err = DB.Exec(createCartItemOptionsTable)
+	if err != nil {
+		panic("Failed to create cart_item_options table: " + err.Error())
+	}
 
 }
 
