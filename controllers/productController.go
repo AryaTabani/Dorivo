@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/AryaTabani/Dorivo/models"
@@ -39,5 +41,28 @@ func GetTagsHandler() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, models.APIResponse[[]models.Tag]{Success: true, Data: tags})
+	}
+}
+
+func GetProductDetailsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		productID, err := strconv.ParseInt(c.Param("productId"), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse[any]{Success: false, Error: "Invalid product ID"})
+			return
+		}
+
+		product, err := services.GetProductDetails(c.Request.Context(), tenantID, productID)
+		if err != nil {
+			if errors.Is(err, services.ErrProductNotFound) {
+				c.JSON(http.StatusNotFound, models.APIResponse[any]{Success: false, Error: err.Error()})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to retrieve product details"})
+			return
+		}
+
+		c.JSON(http.StatusOK, models.APIResponse[*models.Product]{Success: true, Data: product})
 	}
 }
