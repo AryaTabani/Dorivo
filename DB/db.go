@@ -197,6 +197,9 @@ func createTables() {
 		rating REAL DEFAULT 0,
 		image_url TEXT,
 		main_category TEXT NOT NULL,
+        discount_price REAL, 
+        is_featured BOOLEAN DEFAULT FALSE, 
+		is_recommended BOOLEAN DEFAULT FALSE,
 		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
 	);`
 	_, err = DB.Exec(createProductsTable)
