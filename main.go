@@ -19,6 +19,9 @@ func main() {
 	router.GET("/:tenantId/products", controllers.SearchProductsHandler())
 	router.GET("/:tenantId/tags", controllers.GetTagsHandler())
 	router.GET("/:tenantId/products/:productId", controllers.GetProductDetailsHandler())
+	router.GET("/:tenantId/products/bestsellers", controllers.GetBestSellersHandler())
+	router.GET("/:tenantId/products/featured", controllers.GetFeaturedProductHandler())
+	router.GET("/:tenantId/products/recommended", controllers.GetRecommendedProductsHandler())
 
 	userAuthGroup := router.Group("/")
 	userAuthGroup.Use(middleware.AuthMiddleware())
