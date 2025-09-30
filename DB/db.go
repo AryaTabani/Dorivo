@@ -48,7 +48,7 @@ func createTables() {
     password_hash TEXT NOT NULL,
     date_of_birth TEXT,
     avatar_url TEXT, 
-	notifiction_preference TEXT,
+	notification_preference TEXT,
     FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,
     UNIQUE (tenant_id, email)
 );`
@@ -58,7 +58,7 @@ func createTables() {
 		panic("Failed to create users table: " + err.Error())
 	}
 	createUserAddressesTable := `
-CREATE TABLE IF NOT EXISTS user_addresses (
+    CREATE TABLE IF NOT EXISTS user_addresses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS user_addresses (
 		panic("Failed to create reviews table: " + err.Error())
 	}
 	createPaymentMethodsTable := `
-CREATE TABLE IF NOT EXISTS payment_methods (
+    CREATE TABLE IF NOT EXISTS payment_methods (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     processor_token TEXT NOT NULL UNIQUE,
