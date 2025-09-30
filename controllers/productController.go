@@ -66,3 +66,70 @@ func GetProductDetailsHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, models.APIResponse[*models.Product]{Success: true, Data: product})
 	}
 }
+func GetBestSellersHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		products, err := services.GetBestSellers(c.Request.Context(), tenantID)
+
+		if err != nil {
+			response := models.APIResponse[any]{
+				Success: false,
+				Message: "Failed to retrieve best sellers",
+			}
+			c.JSON(http.StatusInternalServerError, response)
+			return
+		}
+		response := models.APIResponse[[]models.Product]{
+			Success: true,
+			Data:    products,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+func GetFeaturedProductHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		product, err := services.GetFeaturedProduct(c.Request.Context(), tenantID)
+
+		if err != nil {
+			if errors.Is(err, services.ErrProductNotFound) {
+				response := models.APIResponse[any]{
+					Success: false,
+					Message: "No featured product found",
+				}
+				c.JSON(http.StatusNotFound, response)
+				return
+			}
+			response := models.APIResponse[any]{
+				Success: false,
+				Message: "Failed to retrieve featured product",
+			}
+			c.JSON(http.StatusInternalServerError, response)
+			return
+		}
+		response := models.APIResponse[*models.Product]{
+			Success: true,
+			Data:    product,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+func GetRecommendedProductsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		products, err := services.GetRecommendedProducts(c.Request.Context(), tenantID)
+		if err != nil {
+			response := models.APIResponse[any]{
+				Success: false,
+				Message: "Failed to retrieve recommended products",
+			}
+			c.JSON(http.StatusInternalServerError, response)
+			return
+		}
+		response := models.APIResponse[[]models.Product]{
+			Success: true,
+			Data:    products,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
