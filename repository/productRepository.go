@@ -150,3 +150,58 @@ func GetProductDetails(ctx context.Context, tenantID string, productID int64) (*
 
 	return &p, nil
 }
+func GetBestSellers(ctx context.Context, tenantID string, limit int) ([]models.Product, error) {
+	query := `
+		SELECT p.id, p.name, p.description, p.price, p.rating, p.image_url, p.main_category, p.discount_price, p.is_featured, p.is_recommended
+		FROM products p
+		JOIN order_items oi ON p.id = oi.product_id
+		WHERE p.tenant_id = ?
+		GROUP BY p.id
+		ORDER BY SUM(oi.quantity) DESC
+		LIMIT ?
+	`
+	rows, err := db.DB.QueryContext(ctx, query, tenantID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []models.Product
+	for rows.Next() {
+		var p models.Product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Rating, &p.ImageURL, &p.MainCategory, &p.DiscountPrice, &p.IsFeatured, &p.IsRecommended); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+	return products, nil
+}
+
+func GetFeaturedProduct(ctx context.Context, tenantID string) (*models.Product, error) {
+	var p models.Product
+	query := `SELECT id, name, description, price, rating, image_url, main_category, discount_price, is_featured, is_recommended FROM products WHERE tenant_id = ? AND is_featured = TRUE LIMIT 1`
+	err := db.DB.QueryRowContext(ctx, query, tenantID).Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Rating, &p.ImageURL, &p.MainCategory, &p.DiscountPrice, &p.IsFeatured, &p.IsRecommended)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+
+func GetRecommendedProducts(ctx context.Context, tenantID string) ([]models.Product, error) {
+	query := `SELECT id, name, description, price, rating, image_url, main_category, discount_price, is_featured, is_recommended FROM products WHERE tenant_id = ? AND is_recommended = TRUE`
+	rows, err := db.DB.QueryContext(ctx, query, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []models.Product
+	for rows.Next() {
+		var p models.Product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Rating, &p.ImageURL, &p.MainCategory, &p.DiscountPrice, &p.IsFeatured, &p.IsRecommended); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+	return products, nil
+}
