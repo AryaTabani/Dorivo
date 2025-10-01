@@ -293,6 +293,19 @@ func createTables() {
 		panic("Failed to create cart_item_options table: " + err.Error())
 	}
 
+	createUserFavoritesTable := `
+    CREATE TABLE IF NOT EXISTS user_favorites (
+    user_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    PRIMARY KEY (user_id, product_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);`
+
+	_, err = DB.Exec(createUserFavoritesTable)
+	if err != nil {
+		panic("Failed to create user_favorites table: " + err.Error())
+	}
 }
 
 func createDefaultTenant() {
