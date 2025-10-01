@@ -1,6 +1,6 @@
 # Dorivo - Multi-Tenant Ordering System Backend
 
-![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)
+![Go Version](https://img.shields.io/badge/Go-1.25+-blue.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
