@@ -54,7 +54,7 @@ The project follows a classic **3-Tier Architecture** to ensure a clean separati
 
 ---
 
-## データベーススキーマ
+## Database Schema
 
 The database is designed with a relational structure to ensure data integrity.
 
