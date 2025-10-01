@@ -1,0 +1,10 @@
+services:
+  backend:
+    build: .
+    container_name: dorivo_backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api.db:/tmp/api.db
+    env_file:
+      - .env
