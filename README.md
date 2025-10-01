@@ -95,7 +95,7 @@ The server will start on `http://localhost:8080`. The SQLite database file (`api
 If you prefer not to use Docker, you can run the application directly.
 
 1.  **Prerequisites**:
-    * Go (version 1.21 or higher) installed on your system.
+    * Go (version 1.25.1 or higher) installed on your system.
 
 2.  **Follow steps 1 and 2** from the Docker setup to clone the repo and create the `.env` file.
 
