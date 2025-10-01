@@ -53,6 +53,10 @@ func main() {
 		userAuthGroup.POST("/cart/items", controllers.AddToCartHandler())
 		userAuthGroup.PUT("/cart/items/:itemId", controllers.UpdateCartItemHandler())
 		userAuthGroup.DELETE("/cart/items/:itemId", controllers.RemoveCartItemHandler())
+
+		userAuthGroup.GET("/favorites", controllers.GetFavoritesHandler())
+		userAuthGroup.POST("/products/:productId/favorite", controllers.AddToFavoritesHandler())
+		userAuthGroup.DELETE("/products/:productId/favorite", controllers.RemoveFromFavoritesHandler())
 	}
 
 	router.Run(":8080")
