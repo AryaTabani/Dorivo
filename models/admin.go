@@ -10,3 +10,6 @@ type ProductPayload struct {
 	IsFeatured    bool     `json:"is_featured"`
 	IsRecommended bool     `json:"is_recommended"`
 }
+type UpdateOrderStatusPayload struct {
+	Status string `json:"status" binding:"required"`
+}
