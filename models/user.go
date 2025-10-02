@@ -3,6 +3,7 @@ package models
 type User struct {
 	ID                      int64                   `json:"id"`
 	TenantID                string                  `json:"-"`
+	Role                    string                  `json:"role"`
 	Full_name               string                  `json:"full_name"`
 	Email                   string                  `json:"email"`
 	Mobile_number           string                  `json:"mobile_number"`
