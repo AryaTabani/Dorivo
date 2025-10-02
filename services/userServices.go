@@ -65,12 +65,13 @@ func LoginUser(ctx context.Context, tenantID string, payload *models.LoginPayloa
 		return "", ErrInvalidCredentials
 	}
 
-	return generateUserToken(user.ID, tenantID)
+	return generateUserToken(user.ID, tenantID, user.Role)
 }
-func generateUserToken(userID int64, tenantID string) (string, error) {
+func generateUserToken(userID int64, tenantID string, userRole string) (string, error) {
 	claims := jwt.MapClaims{
 		"sub": userID,
 		"tid": tenantID,
+		"rol": userRole,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Hour * 72).Unix(),
 	}
