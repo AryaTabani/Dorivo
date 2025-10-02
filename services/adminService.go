@@ -18,3 +18,7 @@ func UpdateProduct(ctx context.Context, tenantID string, productID int64, payloa
 func DeleteProduct(ctx context.Context, tenantID string, productID int64) error {
 	return repository.DeleteProduct(ctx, tenantID, productID)
 }
+
+func UpdateTenantConfig(ctx context.Context, tenantID string, payload *models.TenantConfig) error {
+	return repository.UpdateTenantConfig(ctx, tenantID, payload)
+}
