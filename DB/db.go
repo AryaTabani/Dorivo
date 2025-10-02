@@ -1,23 +1,34 @@
-package db
+package db2
 
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/AryaTabani/Dorivo/models"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var DB *sql.DB
 
 func InitDB() {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
 	var err error
-	DB, err = sql.Open("sqlite3", "/tmp/api.db")
-	//DB, err = sql.Open("sqlite3", "api.db")
-
+	DB, err = sql.Open("mysql", dsn)
 	if err != nil {
-		panic("Could not connect to database")
+		panic("Could not initialize database connection: " + err.Error())
+	}
+	err = DB.Ping()
+	if err != nil {
+		panic("Database connection is not available: " + err.Error())
 	}
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(5)
@@ -26,268 +37,277 @@ func InitDB() {
 }
 
 func createTables() {
+	var err error
 	createTenantsTable := `
-	CREATE TABLE IF NOT EXISTS tenants (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL UNIQUE, 
-		config TEXT NOT NULL
-	);`
-
-	_, err := DB.Exec(createTenantsTable)
+    CREATE TABLE IF NOT EXISTS tenants (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(255) NOT NULL UNIQUE,
+        config JSON NOT NULL
+    );`
+	_, err = DB.Exec(createTenantsTable)
 	if err != nil {
 		panic("Failed to create tenants table: " + err.Error())
 	}
 
 	createUsersTable := `
     CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tenant_id TEXT NOT NULL, 
-    full_name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    mobile_number TEXT,
-    password_hash TEXT NOT NULL,
-    date_of_birth TEXT,
-    avatar_url TEXT, 
-	notification_preference TEXT,
-    FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,
-    UNIQUE (tenant_id, email)
-);`
-
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        tenant_id VARCHAR(150) NOT NULL,
+        full_name VARCHAR(255) NOT NULL,
+        email VARCHAR(150) NOT NULL,
+        mobile_number VARCHAR(255),
+        password_hash VARCHAR(255) NOT NULL,
+        date_of_birth TEXT,
+        avatar_url VARCHAR(255),
+        notification_preference JSON,
+        FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE,
+        UNIQUE (tenant_id, email)
+    );`
 	_, err = DB.Exec(createUsersTable)
 	if err != nil {
 		panic("Failed to create users table: " + err.Error())
 	}
+
 	createUserAddressesTable := `
     CREATE TABLE IF NOT EXISTS user_addresses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    name TEXT NOT NULL,
-    address TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);`
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        address TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createUserAddressesTable)
 	if err != nil {
 		panic("Failed to create user_addresses table: " + err.Error())
 	}
-	createPasswordResetsTable := `
-	CREATE TABLE IF NOT EXISTS password_reset_tokens (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id INTEGER NOT NULL,
-		token_hash TEXT NOT NULL UNIQUE,
-		expires_at TIMESTAMP NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-	);`
 
+	createPasswordResetsTable := `
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        token_hash VARCHAR(255) NOT NULL UNIQUE,
+        expires_at TIMESTAMP NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createPasswordResetsTable)
 	if err != nil {
 		panic("Failed to create password_reset_tokens table: " + err.Error())
 	}
 
-	createOrdersTabale := `
-	CREATE TABLE IF NOT EXISTS orders (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	user_id INTEGER NOT NULL,
-	tenant_id TEXT NOT NULL,
-	status TEXT NOT NULL,
-	total_price REAL NOT NULL,
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (user_id) REFERENCES users(id),
-	FOREIGN KEY (tenant_id) REFERENCES tenants(name)
-	);`
-	_, err = DB.Exec(createOrdersTabale)
+	createOrdersTable := `
+    CREATE TABLE IF NOT EXISTS orders (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        tenant_id VARCHAR(191) NOT NULL,
+        status VARCHAR(255) NOT NULL,
+        total_price DECIMAL(10, 2) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
+    );`
+	_, err = DB.Exec(createOrdersTable)
 	if err != nil {
 		panic("Failed to create orders table: " + err.Error())
 	}
-	createOrderItemsTable := `
-	CREATE TABLE IF NOT EXISTS order_items(
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	order_id INTEGER NOT NULL,
-	item_name TEXT NOT NULL,
-	quantity INTEGER NOT NULL,
-	price REAL NOT NULL,
-	image_url TEXT,
-	FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
-	);`
 
+	createOrderItemsTable := `
+    CREATE TABLE IF NOT EXISTS order_items (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        order_id INT NOT NULL,
+        item_name VARCHAR(255) NOT NULL,
+        quantity INT NOT NULL,
+        price DECIMAL(10, 2) NOT NULL,
+        image_url VARCHAR(255),
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createOrderItemsTable)
 	if err != nil {
-		panic("Failed to create password_reset_tokens table: " + err.Error())
+		panic("Failed to create order_items table: " + err.Error())
 	}
+
 	createCancellationTable := `
-	CREATE TABLE IF NOT EXISTS cancellations (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		order_id INTEGER NOT NULL,
-		user_id INTEGER NOT NULL,
-		reason TEXT,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    CREATE TABLE IF NOT EXISTS cancellations (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        order_id INT NOT NULL,
+        user_id INT NOT NULL,
+        reason TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`
 	_, err = DB.Exec(createCancellationTable)
 	if err != nil {
 		panic("Failed to create cancellations table: " + err.Error())
 	}
+
 	createReviewsTable := `
-	CREATE TABLE IF NOT EXISTS reviews (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		order_id INTEGER NOT NULL,
-		user_id INTEGER NOT NULL,
-		rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
-		comment TEXT,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    CREATE TABLE IF NOT EXISTS reviews (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        order_id INT NOT NULL,
+        user_id INT NOT NULL,
+        rating INT NOT NULL CHECK(rating >= 1 AND rating <= 5),
+        comment TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`
 	_, err = DB.Exec(createReviewsTable)
 	if err != nil {
 		panic("Failed to create reviews table: " + err.Error())
 	}
+
 	createPaymentMethodsTable := `
     CREATE TABLE IF NOT EXISTS payment_methods (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    processor_token TEXT NOT NULL UNIQUE,
-    card_brand TEXT NOT NULL,
-    last_four TEXT NOT NULL,
-    expiry_month INTEGER NOT NULL,
-    expiry_year INTEGER NOT NULL,
-    is_default BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);`
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        processor_token VARCHAR(255) NOT NULL UNIQUE,
+        card_brand VARCHAR(255) NOT NULL,
+        last_four VARCHAR(4) NOT NULL,
+        expiry_month INT NOT NULL,
+        expiry_year INT NOT NULL,
+        is_default TINYINT(1) DEFAULT 0,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createPaymentMethodsTable)
 	if err != nil {
-		panic("Failed to create paymentsMethod table: " + err.Error())
+		panic("Failed to create payment_methods table: " + err.Error())
 	}
-	createfraqsTable := `
-	CREATE TABLE IF NOT EXISTS faqs (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		tenant_id TEXT NOT NULL,
-		category TEXT NOT NULL,
-		question TEXT NOT NULL,
-		answer TEXT NOT NULL,
-		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
-	);`
-	_, err = DB.Exec(createfraqsTable)
+
+	createFaqsTable := `
+    CREATE TABLE IF NOT EXISTS faqs (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        tenant_id VARCHAR(191) NOT NULL,
+        category VARCHAR(255) NOT NULL,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
+    );`
+	_, err = DB.Exec(createFaqsTable)
 	if err != nil {
 		panic("Failed to create faqs table: " + err.Error())
 	}
 
 	createNotificationsTable := `
-	CREATE TABLE IF NOT EXISTS notifications (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id INTEGER NOT NULL,
-		title TEXT NOT NULL,
-		type TEXT NOT NULL,
-		is_read BOOLEAN DEFAULT FALSE,
-		metadata TEXT,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-	);`
+    CREATE TABLE IF NOT EXISTS notifications (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        type VARCHAR(255) NOT NULL,
+        is_read TINYINT(1) DEFAULT 0,
+        metadata JSON,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createNotificationsTable)
 	if err != nil {
 		panic("Failed to create notifications table: " + err.Error())
 	}
+
 	createProductsTable := `
-	CREATE TABLE IF NOT EXISTS products (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		tenant_id TEXT NOT NULL,
-		name TEXT NOT NULL,
-		description TEXT,
-		price REAL NOT NULL,
-		rating REAL DEFAULT 0,
-		image_url TEXT,
-		main_category TEXT NOT NULL,
-        discount_price REAL, 
-        is_featured BOOLEAN DEFAULT FALSE, 
-		is_recommended BOOLEAN DEFAULT FALSE,
-		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
-	);`
+    CREATE TABLE IF NOT EXISTS products (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        tenant_id VARCHAR(191) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        price DECIMAL(10, 2) NOT NULL,
+        rating DECIMAL(3, 2) DEFAULT 0,
+        image_url VARCHAR(255),
+        main_category VARCHAR(255) NOT NULL,
+        discount_price DECIMAL(10, 2),
+        is_featured TINYINT(1) DEFAULT 0,
+        is_recommended TINYINT(1) DEFAULT 0,
+        FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createProductsTable)
 	if err != nil {
 		panic("Failed to create products table: " + err.Error())
 	}
 
 	createTagsTable := `
-	CREATE TABLE IF NOT EXISTS tags (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		tenant_id TEXT NOT NULL,
-		name TEXT NOT NULL,
-		main_category TEXT NOT NULL,
-		UNIQUE (tenant_id, name),
-		FOREIGN KEY (tenant_id) REFERENCES tenants(name) ON DELETE CASCADE
-	);`
+    CREATE TABLE IF NOT EXISTS tags (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        tenant_id VARCHAR(150) NOT NULL,
+        name VARCHAR(150) NOT NULL,
+        main_category VARCHAR(255) NOT NULL,
+        UNIQUE(tenant_id, name)
+    );`
 	_, err = DB.Exec(createTagsTable)
 	if err != nil {
 		panic("Failed to create tags table: " + err.Error())
 	}
+
 	createProductTagsTable := `
-	CREATE TABLE IF NOT EXISTS product_tags (
-		product_id INTEGER NOT NULL,
-		tag_id INTEGER NOT NULL,
-		PRIMARY KEY (product_id, tag_id),
-		FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-		FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE	
-	);`
+    CREATE TABLE IF NOT EXISTS product_tags (
+        product_id INT NOT NULL,
+        tag_id INT NOT NULL,
+        PRIMARY KEY (product_id, tag_id),
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createProductTagsTable)
 	if err != nil {
 		panic("Failed to create product_tags table: " + err.Error())
 	}
+
 	createOptionGroupsTable := `
-	CREATE TABLE IF NOT EXISTS option_groups (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		product_id INTEGER NOT NULL,
-		name TEXT NOT NULL,
-		selection_type TEXT NOT NULL,
-		FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-	);`
+    CREATE TABLE IF NOT EXISTS option_groups (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        product_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        selection_type VARCHAR(255) NOT NULL,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createOptionGroupsTable)
 	if err != nil {
 		panic("Failed to create option_groups table: " + err.Error())
 	}
-	createOptionsTable := `
-	CREATE TABLE IF NOT EXISTS options (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		option_group_id INTEGER NOT NULL,
-		name TEXT NOT NULL,
-		price_modifier REAL NOT NULL DEFAULT 0,
-		FOREIGN KEY (option_group_id) REFERENCES option_groups(id) ON DELETE CASCADE
-	);`
-	_, err = DB.Exec(createOptionsTable)
 
+	createOptionsTable := `
+    CREATE TABLE IF NOT EXISTS options (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        option_group_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        price_modifier DECIMAL(10, 2) NOT NULL DEFAULT 0,
+        FOREIGN KEY (option_group_id) REFERENCES option_groups(id) ON DELETE CASCADE
+    );`
+	_, err = DB.Exec(createOptionsTable)
 	if err != nil {
 		panic("Failed to create options table: " + err.Error())
 	}
+
 	createCartsTable := `
-	CREATE TABLE IF NOT EXISTS carts (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id INTEGER NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-	);`
+    CREATE TABLE IF NOT EXISTS carts (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL UNIQUE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createCartsTable)
 	if err != nil {
 		panic("Failed to create carts table: " + err.Error())
 	}
+
 	createCartItemsTable := `
-	CREATE TABLE IF NOT EXISTS cart_items (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		cart_id INTEGER NOT NULL,
-		product_id INTEGER NOT NULL,
-		quantity INTEGER NOT NULL,
-		FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
-		FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-	);`
+    CREATE TABLE IF NOT EXISTS cart_items (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        cart_id INT NOT NULL,
+        product_id INT NOT NULL,
+        quantity INT NOT NULL,
+        FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createCartItemsTable)
 	if err != nil {
 		panic("Failed to create cart_items table: " + err.Error())
 	}
+
 	createCartItemOptionsTable := `
-	CREATE TABLE IF NOT EXISTS cart_item_options (
-		cart_item_id INTEGER NOT NULL,
-		option_id INTEGER NOT NULL,
-		PRIMARY KEY (cart_item_id, option_id),
-		FOREIGN KEY (cart_item_id) REFERENCES cart_items(id) ON DELETE CASCADE,
-		FOREIGN KEY (option_id) REFERENCES options(id) ON DELETE CASCADE
-	);`
+    CREATE TABLE IF NOT EXISTS cart_item_options (
+        cart_item_id INT NOT NULL,
+        option_id INT NOT NULL,
+        PRIMARY KEY (cart_item_id, option_id),
+        FOREIGN KEY (cart_item_id) REFERENCES cart_items(id) ON DELETE CASCADE,
+        FOREIGN KEY (option_id) REFERENCES options(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createCartItemOptionsTable)
 	if err != nil {
 		panic("Failed to create cart_item_options table: " + err.Error())
@@ -295,13 +315,12 @@ func createTables() {
 
 	createUserFavoritesTable := `
     CREATE TABLE IF NOT EXISTS user_favorites (
-    user_id INTEGER NOT NULL,
-    product_id INTEGER NOT NULL,
-    PRIMARY KEY (user_id, product_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);`
-
+        user_id INT NOT NULL,
+        product_id INT NOT NULL,
+        PRIMARY KEY (user_id, product_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    );`
 	_, err = DB.Exec(createUserFavoritesTable)
 	if err != nil {
 		panic("Failed to create user_favorites table: " + err.Error())
