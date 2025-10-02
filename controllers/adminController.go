@@ -76,3 +76,82 @@ func DeleteProductHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Product deleted successfully"})
 	}
 }
+func UpdateTenantConfigHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+
+		var payload models.TenantConfig
+		if err := c.ShouldBindJSON(&payload); err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse[any]{Success: false, Error: "Invalid request body: " + err.Error()})
+			return
+		}
+
+		err := services.UpdateTenantConfig(c.Request.Context(), tenantID, &payload)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to update tenant configuration"})
+			return
+		}
+
+		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Tenant configuration updated successfully"})
+	}
+}
+
+func GetTenantOrdersHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		status := c.Query("status")
+
+		orders, err := services.GetTenantOrders(c.Request.Context(), tenantID, status)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to retrieve orders"})
+			return
+		}
+
+		c.JSON(http.StatusOK, models.APIResponse[[]models.Order]{Success: true, Data: orders})
+	}
+}
+
+func UpdateOrderStatusHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		orderID, _ := strconv.ParseInt(c.Param("orderId"), 10, 64)
+
+		var payload models.UpdateOrderStatusPayload
+		if err := c.ShouldBindJSON(&payload); err != nil {
+			c.JSON(http.StatusBadRequest, models.APIResponse[any]{Success: false, Error: err.Error()})
+			return
+		}
+
+		err := services.UpdateOrderStatus(c.Request.Context(), tenantID, orderID, payload.Status)
+		if err != nil {
+			c.JSON(http.StatusNotFound, models.APIResponse[any]{Success: false, Error: err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, models.APIResponse[any]{Success: true, Message: "Order status updated successfully"})
+	}
+}
+
+func GetTenantCustomersHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		customers, err := services.GetTenantCustomers(c.Request.Context(), tenantID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to retrieve customers"})
+			return
+		}
+		c.JSON(http.StatusOK, models.APIResponse[[]models.User]{Success: true, Data: customers})
+	}
+}
+
+func GetDashboardStatsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tenantID := c.Param("tenantId")
+		stats, err := services.GetDashboardStats(c.Request.Context(), tenantID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.APIResponse[any]{Success: false, Error: "Failed to retrieve dashboard stats"})
+			return
+		}
+		c.JSON(http.StatusOK, models.APIResponse[*models.DashboardStats]{Success: true, Data: stats})
+	}
+}
