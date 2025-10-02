@@ -66,5 +66,13 @@ func main() {
 		userAuthGroup.DELETE("/products/:productId/favorite", controllers.RemoveFromFavoritesHandler())
 	}
 
+	adminGroup := router.Group("/:tenantId/admin")
+	adminGroup.Use(middleware.AdminAuthMiddleware())
+	{
+		adminGroup.POST("/products", controllers.CreateProductHandler())
+		adminGroup.PUT("/products/:productId", controllers.UpdateProductHandler())
+		adminGroup.DELETE("/products/:productId", controllers.DeleteProductHandler())
+	}
+
 	router.Run(":8080")
 }
