@@ -53,6 +53,7 @@ func createTables() {
     CREATE TABLE IF NOT EXISTS users (
         id INT PRIMARY KEY AUTO_INCREMENT,
         tenant_id VARCHAR(150) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'CUSTOMER',
         full_name VARCHAR(255) NOT NULL,
         email VARCHAR(150) NOT NULL,
         mobile_number VARCHAR(255),
@@ -66,6 +67,16 @@ func createTables() {
 	_, err = DB.Exec(createUsersTable)
 	if err != nil {
 		panic("Failed to create users table: " + err.Error())
+	}
+	createSuperAdminsTable := `
+    CREATE TABLE IF NOT EXISTS super_admins (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(191) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL
+);`
+	_, err = DB.Exec(createSuperAdminsTable)
+	if err != nil {
+		panic("Failed to create super_admins table: " + err.Error())
 	}
 
 	createUserAddressesTable := `
