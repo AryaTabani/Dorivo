@@ -8,7 +8,7 @@ import (
 )
 
 func AddToFavorites(ctx context.Context, userID, productID int64) error {
-	query := `INSERT OR IGNORE INTO user_favorites (user_id, product_id) VALUES (?, ?)`
+	query := `INSERT IGNORE INTO user_favorites (user_id, product_id) VALUES (?, ?)`
 	_, err := db.DB.ExecContext(ctx, query, userID, productID)
 	return err
 }
