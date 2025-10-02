@@ -205,3 +205,23 @@ func GetRecommendedProducts(ctx context.Context, tenantID string) ([]models.Prod
 	}
 	return products, nil
 }
+func CreateProduct(ctx context.Context, tenantID string, payload *models.ProductPayload) (int64, error) {
+	query := `INSERT INTO products (tenant_id, name, description, price, image_url, main_category, discount_price, is_featured, is_recommended) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	res, err := db.DB.ExecContext(ctx, query, tenantID, payload.Name, payload.Description, payload.Price, payload.ImageURL, payload.MainCategory, payload.DiscountPrice, payload.IsFeatured, payload.IsRecommended)
+	if err != nil {
+		return 0, err
+	}
+	return res.LastInsertId()
+}
+
+func UpdateProduct(ctx context.Context, tenantID string, productID int64, payload *models.ProductPayload) error {
+	query := `UPDATE products SET name=?, description=?, price=?, image_url=?, main_category=?, discount_price=?, is_featured=?, is_recommended=? WHERE id=? AND tenant_id=?`
+	_, err := db.DB.ExecContext(ctx, query, payload.Name, payload.Description, payload.Price, payload.ImageURL, payload.MainCategory, payload.DiscountPrice, payload.IsFeatured, payload.IsRecommended, productID, tenantID)
+	return err
+}
+
+func DeleteProduct(ctx context.Context, tenantID string, productID int64) error {
+	query := `DELETE FROM products WHERE id=? AND tenant_id=?`
+	_, err := db.DB.ExecContext(ctx, query, productID, tenantID)
+	return err
+}
