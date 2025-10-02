@@ -28,3 +28,13 @@ func GetTenantByID(ctx context.Context, id string) (*models.Tenant, error) {
 
 	return &tenant, nil
 }
+func UpdateTenantConfig(ctx context.Context, tenantID string, config *models.TenantConfig) error {
+	configJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	query := `UPDATE tenants SET config = ? WHERE name = ?`
+	_, err = db.DB.ExecContext(ctx, query, string(configJSON), tenantID)
+	return err
+}
