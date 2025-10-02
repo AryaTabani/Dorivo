@@ -78,3 +78,32 @@ func CreateReview(ctx context.Context, userID, orderID int64, rating int, commen
 	_, err := db.DB.ExecContext(ctx, query, orderID, userID, rating, comment)
 	return err
 }
+
+func GetOrdersByTenantID(ctx context.Context, tenantId string, status string) ([]models.Order, error) {
+	query := `SELECT id, user_id, tenant_id, status, total_price, created_at FROM orders WHERE tenant_id = ? AND status = ? ORDER BY created_at DESC`
+	rows, err := db.DB.QueryContext(ctx, query, tenantId, status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var orders []models.Order
+	for rows.Next() {
+		var o models.Order
+		err := rows.Scan(&o.ID, &o.UserID, &o.TenantID, &o.Status, &o.TotalPrice, &o.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, o)
+
+	}
+	return orders, nil
+}
+
+func AdminUpdateOrderStatus(ctx context.Context, tenantID string, orderID int64, newStatus string) (int64, error) {
+	query := `UPDATE orders SET status = ? WHERE id = ? AND tenant_id = ?`
+	res, err := db.DB.ExecContext(ctx, query, newStatus, tenantID, orderID)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+}
