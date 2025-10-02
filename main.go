@@ -72,6 +72,14 @@ func main() {
 		adminGroup.POST("/products", controllers.CreateProductHandler())
 		adminGroup.PUT("/products/:productId", controllers.UpdateProductHandler())
 		adminGroup.DELETE("/products/:productId", controllers.DeleteProductHandler())
+		adminGroup.PUT("/config", controllers.UpdateTenantConfigHandler())
+
+		adminGroup.GET("/orders", controllers.GetTenantOrdersHandler())
+		adminGroup.PUT("/orders/:orderId/status", controllers.UpdateOrderStatusHandler())
+
+		adminGroup.GET("/customers", controllers.GetTenantCustomersHandler())
+		adminGroup.GET("/dashboard/stats", controllers.GetDashboardStatsHandler())
+
 	}
 
 	router.Run(":8080")
