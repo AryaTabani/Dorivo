@@ -49,7 +49,7 @@ The project follows a classic **3-Tier Architecture** to ensure a clean separati
 
 * **Language**: **Go**
 * **Web Framework**: **Gin** (for routing and HTTP handling)
-* **Database**: **SQLite** (for simplicity and ease of setup)
+* **Database**: **MySQL** 
 * **Authentication**: **JWT (JSON Web Tokens)**
 * **Password Hashing**: **Bcrypt**
 * **Containerization**: **Docker & Docker Compose**
