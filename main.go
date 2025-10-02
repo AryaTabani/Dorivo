@@ -1,13 +1,20 @@
 package main
 
 import (
+	"log"
+
 	db "github.com/AryaTabani/Dorivo/DB"
 	"github.com/AryaTabani/Dorivo/controllers"
 	"github.com/AryaTabani/Dorivo/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found")
+	}
 	db.InitDB()
 
 	router := gin.Default()
