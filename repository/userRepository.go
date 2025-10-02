@@ -11,8 +11,8 @@ import (
 )
 
 func CreateUser(ctx context.Context, user *models.User) error {
-	query := `INSERT INTO users (tenant_id, full_name, email, mobile_number, password_hash, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)`
-	_, err := db.DB.ExecContext(ctx, query, user.TenantID, user.Full_name, user.Email, user.Mobile_number, user.Password_hash, user.Date_of_birth)
+	query := `INSERT INTO users (tenant_id, role, full_name, email, mobile_number, password_hash, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)`
+	_, err := db.DB.ExecContext(ctx, query, user.TenantID, user.Role, user.Full_name, user.Email, user.Mobile_number, user.Password_hash, user.Date_of_birth)
 	return err
 }
 
@@ -89,4 +89,25 @@ func DeleteUserByID(ctx context.Context, userID int64) error {
 	query := `DELETE FROM users WHERE id = ?`
 	_, err := db.DB.ExecContext(ctx, query, userID)
 	return err
+}
+
+func GetUsersByTenantID(ctx context.Context, tenantID string) ([]models.User, error) {
+	query := `SELECT id, role, full_name, email, mobile_number, date_of_birth, avatar_url, tenant_id FROM users WHERE tenant_id = ? AND role = 'CUSTOMER'`
+	rows, err := db.DB.QueryContext(ctx, query, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var users []models.User
+	for rows.Next() {
+		var u models.User
+		err := rows.Scan(&u.ID, &u.Full_name, &u.Email, &u.Mobile_number, &u.Date_of_birth, &u.Avatar_url, &u.TenantID)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+
+	}
+	return users, nil
+
 }
