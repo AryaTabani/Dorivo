@@ -33,6 +33,7 @@ func init() {
 	router.GET("/:tenantId/products/bestsellers", controllers.GetBestSellersHandler())
 	router.GET("/:tenantId/products/featured", controllers.GetFeaturedProductHandler())
 	router.GET("/:tenantId/products/recommended", controllers.GetRecommendedProductsHandler())
+	router.POST("/superadmin/login", controllers.SuperAdminLoginHandler())
 
 	userAuthGroup := router.Group("/")
 	userAuthGroup.Use(middleware.AuthMiddleware())
@@ -84,6 +85,13 @@ func init() {
 		adminGroup.GET("/customers", controllers.GetTenantCustomersHandler())
 		adminGroup.GET("/dashboard/stats", controllers.GetDashboardStatsHandler())
 
+	}
+	superAdminGroup := router.Group("/superadmin")
+	superAdminGroup.Use(middleware.SuperAdminAuthMiddleware())
+	{
+		superAdminGroup.GET("/tenants", controllers.GetAllTenantsHandler())
+		superAdminGroup.POST("/tenants", controllers.CreateTenantHandler())
+		superAdminGroup.DELETE("/tenants/:tenantId", controllers.DeleteTenantHandler())
 	}
 }
 
