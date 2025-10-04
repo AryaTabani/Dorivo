@@ -38,3 +38,40 @@ func UpdateTenantConfig(ctx context.Context, tenantID string, config *models.Ten
 	_, err = db.DB.ExecContext(ctx, query, string(configJSON), tenantID)
 	return err
 }
+
+func CreateTenant(ctx context.Context, name string, config *models.TenantConfig) error {
+	configJSON, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+	query := `INSERT INTO tenants (name, config) VALUES (?, ?)`
+	_, err = db.DB.ExecContext(ctx, query, name, string(configJSON))
+	return err
+}
+
+func GetAllTenants(ctx context.Context) ([]models.Tenant, error) {
+	rows, err := db.DB.QueryContext(ctx, "SELECT name, config FROM tenants")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tenants []models.Tenant
+	for rows.Next() {
+		var t models.Tenant
+		var configJSON string
+		if err := rows.Scan(&t.Name, &configJSON); err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal([]byte(configJSON), &t.Config); err != nil {
+			return nil, err
+		}
+		tenants = append(tenants, t)
+	}
+	return tenants, nil
+}
+
+func DeleteTenant(ctx context.Context, tenantID string) error {
+	_, err := db.DB.ExecContext(ctx, "DELETE FROM tenants WHERE name = ?", tenantID)
+	return err
+}
