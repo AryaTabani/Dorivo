@@ -1,0 +1,1462 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is the backend API for the Dorivo multi-tenant ordering system.",
+        "title": "Dorivo Multi-Tenant API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/addresses": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves a list of all saved delivery addresses for the authenticated user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User \u0026 Profile"
+                ],
+                "summary": "Get user's addresses",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-array_models_Address"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve addresses",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Adds a new delivery address to the authenticated user's profile.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User \u0026 Profile"
+                ],
+                "summary": "Add a new address",
+                "parameters": [
+                    {
+                        "description": "Address Information",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddAddressPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Address added successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to add new address",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/addresses/{addressId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a specific address belonging to the authenticated user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User \u0026 Profile"
+                ],
+                "summary": "Delete an address",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Address ID",
+                        "name": "addressId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid address ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "404": {
+                        "description": "Address not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete address",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves the profile information for the currently authenticated user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User \u0026 Profile"
+                ],
+                "summary": "Get user profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-models_User"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates the profile information for the currently authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User \u0026 Profile"
+                ],
+                "summary": "Update user profile",
+                "parameters": [
+                    {
+                        "description": "Updated profile information",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateProfilePayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Permanently deletes the account of the currently authenticated user. This action is irreversible.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User \u0026 Profile"
+                ],
+                "summary": "Delete user account",
+                "responses": {
+                    "200": {
+                        "description": "Account deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete account",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/change-password": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows an authenticated user to change their password by providing their current password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User \u0026 Profile"
+                ],
+                "summary": "Change user password",
+                "parameters": [
+                    {
+                        "description": "Current and new password",
+                        "name": "passwords",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ChangePasswordPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password changed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "401": {
+                        "description": "The current password is incorrect",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to change password",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/notification-settings": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves the notification preferences for the currently authenticated user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notifications \u0026 Settings"
+                ],
+                "summary": "Get notification settings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-models_NotificationPreferences"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve settings",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates the notification preferences for the currently authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notifications \u0026 Settings"
+                ],
+                "summary": "Update notification settings",
+                "parameters": [
+                    {
+                        "description": "New notification settings",
+                        "name": "settings",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.NotificationPreferences"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Settings updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update settings",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/admin/config": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a tenant admin to update their own store's configuration (e.g., name, theme, contact info).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Configuration"
+                ],
+                "summary": "Update tenant configuration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated Tenant Configuration",
+                        "name": "config",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TenantConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tenant configuration updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update tenant configuration",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/admin/customers": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a tenant admin to view a list of all customers who have registered with their store.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Customer Management"
+                ],
+                "summary": "Get all customers for the tenant",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-array_models_User"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve customers",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/admin/dashboard/stats": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves key performance statistics for the tenant's store, such as total revenue and orders today.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Dashboard"
+                ],
+                "summary": "Get dashboard analytics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-models_DashboardStats"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve dashboard stats",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/admin/orders": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a tenant admin to view all orders placed for their store, filterable by status.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Order Management"
+                ],
+                "summary": "Get all orders for the tenant",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter orders by status (e.g., Active, Completed, Cancelled)",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-array_models_Order"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve orders",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/admin/orders/{orderId}/status": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a tenant admin to update the status of a specific order (e.g., to 'Preparing', 'Completed').",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Order Management"
+                ],
+                "summary": "Update an order's status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "orderId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New Order Status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateOrderStatusPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order status updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/admin/products": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a tenant admin to create a new product for their store.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Product Management"
+                ],
+                "summary": "Create a new product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New Product Data",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProductPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Product created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-models_CreateProductResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create product",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/admin/products/{productId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a tenant admin to update the details of an existing product.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Product Management"
+                ],
+                "summary": "Update an existing product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "productId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated Product Data",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProductPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Product created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-models_CreateProductResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update product",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows a tenant admin to delete a product from their store.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Panel - Product Management"
+                ],
+                "summary": "Delete a product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "productId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete product",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/login": {
+            "post": {
+                "description": "Authenticates a user for a specific tenant and returns a JWT token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Log in a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User Login Credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-models_LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Login failed",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenantId}/register": {
+            "post": {
+                "description": "Creates a new user account for a specific tenant.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenantId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User Registration Info",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RegisterPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "409": {
+                        "description": "User with this email already exists",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create user",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.APIResponse-any": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-array_models_Address": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Address"
+                    }
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-array_models_Order": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Order"
+                    }
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-array_models_User": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-models_CreateProductResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.CreateProductResponse"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-models_DashboardStats": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.DashboardStats"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-models_LoginResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.LoginResponse"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-models_NotificationPreferences": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.NotificationPreferences"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.APIResponse-models_User": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.AddAddressPayload": {
+            "type": "object",
+            "required": [
+                "address",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Address": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ChangePasswordPayload": {
+            "type": "object",
+            "required": [
+                "current_password",
+                "new_password"
+            ],
+            "properties": {
+                "current_password": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string",
+                    "minLength": 8
+                }
+            }
+        },
+        "models.CreateProductResponse": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.DashboardStats": {
+            "type": "object",
+            "properties": {
+                "orders_today": {
+                    "type": "integer"
+                },
+                "total_customers": {
+                    "type": "integer"
+                },
+                "total_revenue": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.LoginPayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.NotificationPreferences": {
+            "type": "object",
+            "properties": {
+                "cashback": {
+                    "type": "boolean"
+                },
+                "general_notifications": {
+                    "type": "boolean"
+                },
+                "payments": {
+                    "type": "boolean"
+                },
+                "sound": {
+                    "type": "boolean"
+                },
+                "special_offers": {
+                    "type": "boolean"
+                },
+                "vibrate": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tenantID": {
+                    "type": "string"
+                },
+                "totalPrice": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "userID": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.Plan": {
+            "type": "string",
+            "enum": [
+                "BASE",
+                "PRO",
+                "VIP"
+            ],
+            "x-enum-varnames": [
+                "PlanBase",
+                "PlanPro",
+                "PlanVip"
+            ]
+        },
+        "models.ProductPayload": {
+            "type": "object",
+            "required": [
+                "main_category",
+                "name",
+                "price"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "discount_price": {
+                    "type": "number"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "is_featured": {
+                    "type": "boolean"
+                },
+                "is_recommended": {
+                    "type": "boolean"
+                },
+                "main_category": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.RegisterPayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "full_name",
+                "password"
+            ],
+            "properties": {
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "mobile_number": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                }
+            }
+        },
+        "models.TenantConfig": {
+            "type": "object"
+        },
+        "models.Theme": {
+            "type": "string",
+            "enum": [
+                "dark",
+                "light"
+            ],
+            "x-enum-varnames": [
+                "ThemeDark",
+                "ThemeLight"
+            ]
+        },
+        "models.ThemeColors": {
+            "type": "object",
+            "properties": {
+                "primary": {
+                    "type": "string"
+                },
+                "primary2": {
+                    "type": "string"
+                },
+                "secondary": {
+                    "type": "string"
+                },
+                "secondary2": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdateOrderStatusPayload": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdateProfilePayload": {
+            "type": "object",
+            "required": [
+                "full_name"
+            ],
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "mobile_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mobile_number": {
+                    "type": "string"
+                },
+                "notification_preferences": {
+                    "$ref": "#/definitions/models.NotificationPreferences"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and a JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

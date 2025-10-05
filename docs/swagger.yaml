@@ -1,0 +1,959 @@
+basePath: /
+definitions:
+  models.APIResponse-any:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-array_models_Address:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.Address'
+        type: array
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-array_models_Order:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.Order'
+        type: array
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-array_models_User:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-models_CreateProductResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.CreateProductResponse'
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-models_DashboardStats:
+    properties:
+      data:
+        $ref: '#/definitions/models.DashboardStats'
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-models_LoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.LoginResponse'
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-models_NotificationPreferences:
+    properties:
+      data:
+        $ref: '#/definitions/models.NotificationPreferences'
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.APIResponse-models_User:
+    properties:
+      data:
+        $ref: '#/definitions/models.User'
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.AddAddressPayload:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - name
+    type: object
+  models.Address:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.ChangePasswordPayload:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        minLength: 8
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  models.CreateProductResponse:
+    properties:
+      product_id:
+        type: integer
+    type: object
+  models.DashboardStats:
+    properties:
+      orders_today:
+        type: integer
+      total_customers:
+        type: integer
+      total_revenue:
+        type: number
+    type: object
+  models.LoginPayload:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  models.NotificationPreferences:
+    properties:
+      cashback:
+        type: boolean
+      general_notifications:
+        type: boolean
+      payments:
+        type: boolean
+      sound:
+        type: boolean
+      special_offers:
+        type: boolean
+      vibrate:
+        type: boolean
+    type: object
+  models.Order:
+    properties:
+      createdAt:
+        type: string
+      id:
+        format: int64
+        type: integer
+      status:
+        type: string
+      tenantID:
+        type: string
+      totalPrice:
+        format: float64
+        type: number
+      userID:
+        format: int64
+        type: integer
+    type: object
+  models.Plan:
+    enum:
+    - BASE
+    - PRO
+    - VIP
+    type: string
+    x-enum-varnames:
+    - PlanBase
+    - PlanPro
+    - PlanVip
+  models.ProductPayload:
+    properties:
+      description:
+        type: string
+      discount_price:
+        type: number
+      image_url:
+        type: string
+      is_featured:
+        type: boolean
+      is_recommended:
+        type: boolean
+      main_category:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+    required:
+    - main_category
+    - name
+    - price
+    type: object
+  models.RegisterPayload:
+    properties:
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      mobile_number:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - full_name
+    - password
+    type: object
+  models.TenantConfig:
+    type: object
+  models.Theme:
+    enum:
+    - dark
+    - light
+    type: string
+    x-enum-varnames:
+    - ThemeDark
+    - ThemeLight
+  models.ThemeColors:
+    properties:
+      primary:
+        type: string
+      primary2:
+        type: string
+      secondary:
+        type: string
+      secondary2:
+        type: string
+    type: object
+  models.UpdateOrderStatusPayload:
+    properties:
+      status:
+        type: string
+    required:
+    - status
+    type: object
+  models.UpdateProfilePayload:
+    properties:
+      avatar_url:
+        type: string
+      date_of_birth:
+        type: string
+      full_name:
+        type: string
+      mobile_number:
+        type: string
+    required:
+    - full_name
+    type: object
+  models.User:
+    properties:
+      avatar_url:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      mobile_number:
+        type: string
+      notification_preferences:
+        $ref: '#/definitions/models.NotificationPreferences'
+      role:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the backend API for the Dorivo multi-tenant ordering system.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Dorivo Multi-Tenant API
+  version: "1.0"
+paths:
+  /{tenantId}/admin/config:
+    put:
+      consumes:
+      - application/json
+      description: Allows a tenant admin to update their own store's configuration
+        (e.g., name, theme, contact info).
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: Updated Tenant Configuration
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/models.TenantConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tenant configuration updated successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to update tenant configuration
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Update tenant configuration
+      tags:
+      - Admin Panel - Configuration
+  /{tenantId}/admin/customers:
+    get:
+      description: Allows a tenant admin to view a list of all customers who have
+        registered with their store.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse-array_models_User'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to retrieve customers
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get all customers for the tenant
+      tags:
+      - Admin Panel - Customer Management
+  /{tenantId}/admin/dashboard/stats:
+    get:
+      description: Retrieves key performance statistics for the tenant's store, such
+        as total revenue and orders today.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse-models_DashboardStats'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to retrieve dashboard stats
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get dashboard analytics
+      tags:
+      - Admin Panel - Dashboard
+  /{tenantId}/admin/orders:
+    get:
+      description: Allows a tenant admin to view all orders placed for their store,
+        filterable by status.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: Filter orders by status (e.g., Active, Completed, Cancelled)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse-array_models_Order'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to retrieve orders
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get all orders for the tenant
+      tags:
+      - Admin Panel - Order Management
+  /{tenantId}/admin/orders/{orderId}/status:
+    put:
+      consumes:
+      - application/json
+      description: Allows a tenant admin to update the status of a specific order
+        (e.g., to 'Preparing', 'Completed').
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: Order ID
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      - description: New Order Status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateOrderStatusPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order status updated successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "404":
+          description: Order not found
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Update an order's status
+      tags:
+      - Admin Panel - Order Management
+  /{tenantId}/admin/products:
+    post:
+      consumes:
+      - application/json
+      description: Allows a tenant admin to create a new product for their store.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: New Product Data
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProductPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Product created successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-models_CreateProductResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to create product
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Create a new product
+      tags:
+      - Admin Panel - Product Management
+  /{tenantId}/admin/products/{productId}:
+    delete:
+      description: Allows a tenant admin to delete a product from their store.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product deleted successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to delete product
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Delete a product
+      tags:
+      - Admin Panel - Product Management
+    put:
+      consumes:
+      - application/json
+      description: Allows a tenant admin to update the details of an existing product.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: integer
+      - description: Updated Product Data
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProductPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Product created successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-models_CreateProductResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to update product
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Update an existing product
+      tags:
+      - Admin Panel - Product Management
+  /{tenantId}/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user for a specific tenant and returns a JWT token.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: User Login Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/models.APIResponse-models_LoginResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Login failed
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      summary: Log in a user
+      tags:
+      - Authentication
+  /{tenantId}/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account for a specific tenant.
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenantId
+        required: true
+        type: string
+      - description: User Registration Info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "409":
+          description: User with this email already exists
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to create user
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      summary: Register a new user
+      tags:
+      - Authentication
+  /addresses:
+    get:
+      description: Retrieves a list of all saved delivery addresses for the authenticated
+        user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse-array_models_Address'
+        "500":
+          description: Failed to retrieve addresses
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get user's addresses
+      tags:
+      - User & Profile
+    post:
+      consumes:
+      - application/json
+      description: Adds a new delivery address to the authenticated user's profile.
+      parameters:
+      - description: Address Information
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddAddressPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Address added successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to add new address
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Add a new address
+      tags:
+      - User & Profile
+  /addresses/{addressId}:
+    delete:
+      description: Deletes a specific address belonging to the authenticated user.
+      parameters:
+      - description: Address ID
+        in: path
+        name: addressId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Address deleted successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid address ID
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "404":
+          description: Address not found
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to delete address
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Delete an address
+      tags:
+      - User & Profile
+  /profile:
+    delete:
+      description: Permanently deletes the account of the currently authenticated
+        user. This action is irreversible.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account deleted successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to delete account
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Delete user account
+      tags:
+      - User & Profile
+    get:
+      description: Retrieves the profile information for the currently authenticated
+        user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse-models_User'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to retrieve profile
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - User & Profile
+    put:
+      consumes:
+      - application/json
+      description: Updates the profile information for the currently authenticated
+        user.
+      parameters:
+      - description: Updated profile information
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProfilePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile updated successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to update profile
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - User & Profile
+  /profile/change-password:
+    put:
+      consumes:
+      - application/json
+      description: Allows an authenticated user to change their password by providing
+        their current password.
+      parameters:
+      - description: Current and new password
+        in: body
+        name: passwords
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePasswordPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password changed successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "401":
+          description: The current password is incorrect
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to change password
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Change user password
+      tags:
+      - User & Profile
+  /profile/notification-settings:
+    get:
+      description: Retrieves the notification preferences for the currently authenticated
+        user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse-models_NotificationPreferences'
+        "500":
+          description: Failed to retrieve settings
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get notification settings
+      tags:
+      - Notifications & Settings
+    put:
+      consumes:
+      - application/json
+      description: Updates the notification preferences for the currently authenticated
+        user.
+      parameters:
+      - description: New notification settings
+        in: body
+        name: settings
+        required: true
+        schema:
+          $ref: '#/definitions/models.NotificationPreferences'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Settings updated successfully
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to update settings
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Update notification settings
+      tags:
+      - Notifications & Settings
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and a JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
