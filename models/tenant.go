@@ -1,7 +1,5 @@
 package models
 
-import "encoding/json"
-
 type Plan string
 type Theme string
 
@@ -21,15 +19,17 @@ type ThemeColors struct {
 	Secondary2 string `json:"secondary2"`
 }
 
+type RawJSONObject map[string]interface{}
+
 type TenantConfig struct {
-	Name         string          `json:"name"`
-	Logo         string          `json:"logo,omitempty"`
-	Plan         Plan            `json:"plan"`
-	MultiTheme   bool            `json:"multiTheme"`
-	DefaultTheme Theme           `json:"defaultTheme"`
-	ThemeColors  ThemeColors     `json:"themeColors"`
-	Features     json.RawMessage `json:"features"`
-	ContactInfo  ContactInfo     `json:"contactInfo"`
+	Name         string        `json:"name"`
+	Logo         string        `json:"logo,omitempty"`
+	Plan         Plan          `json:"plan"`
+	MultiTheme   bool          `json:"multiTheme"`
+	DefaultTheme Theme         `json:"defaultTheme"`
+	ThemeColors  ThemeColors   `json:"themeColors"`
+	ContactInfo  ContactInfo   `json:"contactInfo"`
+	Features     RawJSONObject `json:"features"`
 }
 
 type Tenant struct {
