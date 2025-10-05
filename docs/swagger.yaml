@@ -49,6 +49,17 @@ definitions:
       success:
         type: boolean
     type: object
+  models.APIResponse-models_Cart:
+    properties:
+      data:
+        $ref: '#/definitions/models.Cart'
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
   models.APIResponse-models_CreateProductResponse:
     properties:
       data:
@@ -114,6 +125,21 @@ definitions:
     - address
     - name
     type: object
+  models.AddToCartPayload:
+    properties:
+      option_ids:
+        items:
+          type: integer
+        type: array
+      product_id:
+        type: integer
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
   models.Address:
     properties:
       address:
@@ -122,6 +148,43 @@ definitions:
         type: integer
       name:
         type: string
+    type: object
+  models.Cart:
+    properties:
+      grand_total:
+        type: number
+      items:
+        items:
+          $ref: '#/definitions/models.CartItem'
+        type: array
+    type: object
+  models.CartItem:
+    properties:
+      base_price:
+        type: number
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/models.CartItemOption'
+        type: array
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      total_price:
+        type: number
+    type: object
+  models.CartItemOption:
+    properties:
+      name:
+        type: string
+      price_modifier:
+        type: number
     type: object
   models.ChangePasswordPayload:
     properties:
@@ -133,6 +196,19 @@ definitions:
     required:
     - current_password
     - new_password
+    type: object
+  models.ContactInfo:
+    properties:
+      customerService:
+        type: string
+      facebook:
+        type: string
+      instagram:
+        type: string
+      website:
+        type: string
+      whatsapp:
+        type: string
     type: object
   models.CreateProductResponse:
     properties:
@@ -229,6 +305,9 @@ definitions:
     - name
     - price
     type: object
+  models.RawJSONObject:
+    additionalProperties: true
+    type: object
   models.RegisterPayload:
     properties:
       date_of_birth:
@@ -248,6 +327,23 @@ definitions:
     - password
     type: object
   models.TenantConfig:
+    properties:
+      contactInfo:
+        $ref: '#/definitions/models.ContactInfo'
+      defaultTheme:
+        $ref: '#/definitions/models.Theme'
+      features:
+        $ref: '#/definitions/models.RawJSONObject'
+      logo:
+        type: string
+      multiTheme:
+        type: boolean
+      name:
+        type: string
+      plan:
+        $ref: '#/definitions/models.Plan'
+      themeColors:
+        $ref: '#/definitions/models.ThemeColors'
     type: object
   models.Theme:
     enum:
@@ -267,6 +363,14 @@ definitions:
         type: string
       secondary2:
         type: string
+    type: object
+  models.UpdateCartItemPayload:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - quantity
     type: object
   models.UpdateOrderStatusPayload:
     properties:
@@ -786,6 +890,132 @@ paths:
       summary: Delete an address
       tags:
       - User & Profile
+  /cart:
+    get:
+      description: Retrieves the full contents of the user's shopping cart, with calculated
+        totals.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse-models_Cart'
+        "500":
+          description: Failed to retrieve cart
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get cart contents
+      tags:
+      - Cart & Checkout
+  /cart/items:
+    post:
+      consumes:
+      - application/json
+      description: Adds a product with selected options and quantity to the user's
+        shopping cart.
+      parameters:
+      - description: Item to Add
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddToCartPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item added to cart
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to add item to cart
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Add an item to the cart
+      tags:
+      - Cart & Checkout
+  /cart/items/{itemId}:
+    delete:
+      description: Removes a specific item entirely from the user's shopping cart.
+      parameters:
+      - description: Cart Item ID
+        in: path
+        name: itemId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item removed from cart
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid item ID
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "404":
+          description: Cart item not found
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to remove item
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Remove item from cart
+      tags:
+      - Cart & Checkout
+    put:
+      consumes:
+      - application/json
+      description: Updates the quantity of a specific item in the user's cart.
+      parameters:
+      - description: Cart Item ID
+        in: path
+        name: itemId
+        required: true
+        type: integer
+      - description: New Quantity
+        in: body
+        name: quantity
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCartItemPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item quantity updated
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "400":
+          description: Invalid request body or item ID
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "404":
+          description: Cart item not found
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+        "500":
+          description: Failed to update item
+          schema:
+            $ref: '#/definitions/models.APIResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Update item quantity
+      tags:
+      - Cart & Checkout
   /profile:
     delete:
       description: Permanently deletes the account of the currently authenticated

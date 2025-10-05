@@ -156,6 +156,202 @@ const docTemplate = `{
                 }
             }
         },
+        "/cart": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves the full contents of the user's shopping cart, with calculated totals.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart \u0026 Checkout"
+                ],
+                "summary": "Get cart contents",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-models_Cart"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve cart",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/cart/items": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Adds a product with selected options and quantity to the user's shopping cart.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart \u0026 Checkout"
+                ],
+                "summary": "Add an item to the cart",
+                "parameters": [
+                    {
+                        "description": "Item to Add",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddToCartPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Item added to cart",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to add item to cart",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/cart/items/{itemId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates the quantity of a specific item in the user's cart.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart \u0026 Checkout"
+                ],
+                "summary": "Update item quantity",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cart Item ID",
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New Quantity",
+                        "name": "quantity",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateCartItemPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Item quantity updated",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body or item ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "404": {
+                        "description": "Cart item not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update item",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Removes a specific item entirely from the user's shopping cart.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart \u0026 Checkout"
+                ],
+                "summary": "Remove item from cart",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cart Item ID",
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Item removed from cart",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid item ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "404": {
+                        "description": "Cart item not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to remove item",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse-any"
+                        }
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "security": [
@@ -1068,6 +1264,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.APIResponse-models_Cart": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.Cart"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "models.APIResponse-models_CreateProductResponse": {
             "type": "object",
             "properties": {
@@ -1168,6 +1381,28 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AddToCartPayload": {
+            "type": "object",
+            "required": [
+                "product_id",
+                "quantity"
+            ],
+            "properties": {
+                "option_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "models.Address": {
             "type": "object",
             "properties": {
@@ -1179,6 +1414,63 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Cart": {
+            "type": "object",
+            "properties": {
+                "grand_total": {
+                    "type": "number"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CartItem"
+                    }
+                }
+            }
+        },
+        "models.CartItem": {
+            "type": "object",
+            "properties": {
+                "base_price": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CartItemOption"
+                    }
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.CartItemOption": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "price_modifier": {
+                    "type": "number"
                 }
             }
         },
@@ -1195,6 +1487,26 @@ const docTemplate = `{
                 "new_password": {
                     "type": "string",
                     "minLength": 8
+                }
+            }
+        },
+        "models.ContactInfo": {
+            "type": "object",
+            "properties": {
+                "customerService": {
+                    "type": "string"
+                },
+                "facebook": {
+                    "type": "string"
+                },
+                "instagram": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                },
+                "whatsapp": {
+                    "type": "string"
                 }
             }
         },
@@ -1339,6 +1651,10 @@ const docTemplate = `{
                 }
             }
         },
+        "models.RawJSONObject": {
+            "type": "object",
+            "additionalProperties": true
+        },
         "models.RegisterPayload": {
             "type": "object",
             "required": [
@@ -1366,7 +1682,33 @@ const docTemplate = `{
             }
         },
         "models.TenantConfig": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "contactInfo": {
+                    "$ref": "#/definitions/models.ContactInfo"
+                },
+                "defaultTheme": {
+                    "$ref": "#/definitions/models.Theme"
+                },
+                "features": {
+                    "$ref": "#/definitions/models.RawJSONObject"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "multiTheme": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "plan": {
+                    "$ref": "#/definitions/models.Plan"
+                },
+                "themeColors": {
+                    "$ref": "#/definitions/models.ThemeColors"
+                }
+            }
         },
         "models.Theme": {
             "type": "string",
@@ -1393,6 +1735,18 @@ const docTemplate = `{
                 },
                 "secondary2": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UpdateCartItemPayload": {
+            "type": "object",
+            "required": [
+                "quantity"
+            ],
+            "properties": {
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
