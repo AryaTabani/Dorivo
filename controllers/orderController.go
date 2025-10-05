@@ -10,6 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetMyOrdersHandler godoc
+// @Summary      Get user's order history
+// @Description  Retrieves a list of orders for the authenticated user, filterable by status.
+// @Tags         Orders
+// @Produce      json
+// @Security     BearerAuth
+// @Param        status query    string false "Filter orders by status (e.g., Active, Completed, Cancelled)"
+// @Success      200    {object} models.APIResponse[[]models.OrderSummaryView]
+// @Failure      500    {object} models.APIResponse[any] "Failed to retrieve orders"
+// @Router       /orders [get]
 func GetMyOrdersHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
@@ -28,6 +38,22 @@ func GetMyOrdersHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// CancelOrderHandler godoc
+// @Summary      Cancel an active order
+// @Description  Allows an authenticated user to cancel one of their own active orders.
+// @Tags         Orders
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        orderId path     int                      true "Order ID"
+// @Param        reason  body     models.CancelOrderPayload true "Reason for cancellation"
+// @Success      200     {object} models.APIResponse[any] "Order cancelled successfully"
+// @Failure      400     {object} models.APIResponse[any] "Invalid order ID or request body"
+// @Failure      404     {object} models.APIResponse[any] "Order not found"
+// @Failure      409     {object} models.APIResponse[any] "Order cannot be cancelled"
+// @Failure      500     {object} models.APIResponse[any] "Failed to cancel order"
+// @Router       /orders/{orderId}/cancel [post]
 func CancelOrderHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
@@ -61,6 +87,21 @@ func CancelOrderHandler() gin.HandlerFunc {
 	}
 }
 
+// LeaveReviewHandler godoc
+// @Summary      Leave a review for an order
+// @Description  Allows an authenticated user to leave a rating and comment for one of their own completed orders.
+// @Tags         Orders
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        orderId path     int                      true "Order ID"
+// @Param        review  body     models.LeaveReviewPayload true "Rating and comment for the order"
+// @Success      201     {object} models.APIResponse[any] "Review submitted successfully"
+// @Failure      400     {object} models.APIResponse[any] "Invalid order ID or request body"
+// @Failure      404     {object} models.APIResponse[any] "Order not found"
+// @Failure      409     {object} models.APIResponse[any] "Order is not completed or a review already exists"
+// @Failure      500     {object} models.APIResponse[any] "Failed to leave review"
+// @Router       /orders/{orderId}/review [post]
 func LeaveReviewHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
