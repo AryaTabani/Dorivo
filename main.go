@@ -5,10 +5,33 @@ import (
 
 	db "github.com/AryaTabani/Dorivo/DB"
 	"github.com/AryaTabani/Dorivo/controllers"
+	_ "github.com/AryaTabani/Dorivo/docs"
 	"github.com/AryaTabani/Dorivo/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+// @title Dorivo Multi-Tenant API
+// @version 1.0
+// @description This is the backend API for the Dorivo multi-tenant ordering system.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and a JWT token.
 
 func main() {
 	err := godotenv.Load()
@@ -18,7 +41,7 @@ func main() {
 	db.InitDB()
 
 	router := gin.Default()
-
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/tenant/:tenantId", controllers.GetTenantConfigHandler())
 	router.POST("/:tenantId/register", controllers.RegisterHandler())
 	router.POST("/:tenantId/login", controllers.LoginHandler())
