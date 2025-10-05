@@ -10,6 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddAddressHandler godoc
+// @Summary      Add a new address
+// @Description  Adds a new delivery address to the authenticated user's profile.
+// @Tags         User & Profile
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        address body     models.AddAddressPayload true "Address Information"
+// @Success      201     {object} models.APIResponse[any] "Address added successfully"
+// @Failure      400     {object} models.APIResponse[any] "Invalid request body"
+// @Failure      500     {object} models.APIResponse[any] "Failed to add new address"
+// @Router       /addresses [post]
 func AddAddressHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
@@ -30,6 +42,15 @@ func AddAddressHandler() gin.HandlerFunc {
 	}
 }
 
+// GetAddressesHandler godoc
+// @Summary      Get user's addresses
+// @Description  Retrieves a list of all saved delivery addresses for the authenticated user.
+// @Tags         User & Profile
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} models.APIResponse[[]models.Address]
+// @Failure      500 {object} models.APIResponse[any] "Failed to retrieve addresses"
+// @Router       /addresses [get]
 func GetAddressesHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
@@ -44,6 +65,18 @@ func GetAddressesHandler() gin.HandlerFunc {
 	}
 }
 
+// DeleteAddressHandler godoc
+// @Summary      Delete an address
+// @Description  Deletes a specific address belonging to the authenticated user.
+// @Tags         User & Profile
+// @Produce      json
+// @Security     BearerAuth
+// @Param        addressId path     int true "Address ID"
+// @Success      200       {object} models.APIResponse[any] "Address deleted successfully"
+// @Failure      400       {object} models.APIResponse[any] "Invalid address ID"
+// @Failure      404       {object} models.APIResponse[any] "Address not found"
+// @Failure      500       {object} models.APIResponse[any] "Failed to delete address"
+// @Router       /addresses/{addressId} [delete]
 func DeleteAddressHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
