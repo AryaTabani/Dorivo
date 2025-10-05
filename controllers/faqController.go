@@ -8,6 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetFAQsHandler godoc
+// @Summary      Get FAQs for a tenant
+// @Description  Retrieves a list of frequently asked questions for a specific tenant, optionally filtered by category.
+// @Tags         Public
+// @Produce      json
+// @Param        tenantId path     string true "Tenant ID"
+// @Param        category query    string false "Filter FAQs by category"
+// @Success      200      {object} models.APIResponse[[]models.FAQ]
+// @Failure      500      {object} models.APIResponse[any] "Failed to retrieve FAQs"
+// @Router       /{tenantId}/faqs [get]
 func GetFAQsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantID := c.Param("tenantId")
