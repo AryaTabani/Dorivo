@@ -353,7 +353,7 @@ func createDefaultTenant() {
 			Plan:         models.PlanPro,
 			MultiTheme:   true,
 			DefaultTheme: models.ThemeLight,
-			Features:     json.RawMessage(`{}`),
+			Features:     models.RawJSONObject{"featureX": true, "featureY": false},
 			ThemeColors: models.ThemeColors{
 				Primary:    "163 177 138",
 				Primary2:   "230 240 230",
