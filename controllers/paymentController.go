@@ -10,6 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddPaymentMethodHandler godoc
+// @Summary      Add a new payment method
+// @Description  Adds a new payment method to the user's profile using a token from a payment processor.
+// @Tags         User & Profile
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        token body     models.AddPaymentMethodPayload true "Payment Processor Token"
+// @Success      201   {object} models.APIResponse[any] "Payment method added successfully"
+// @Failure      400   {object} models.APIResponse[any] "Invalid request body"
+// @Failure      500   {object} models.APIResponse[any] "Failed to add payment method"
+// @Router       /payment-methods [post]
 func AddPaymentMethodHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
@@ -34,6 +46,15 @@ func AddPaymentMethodHandler() gin.HandlerFunc {
 	}
 }
 
+// GetPaymentMethodsHandler godoc
+// @Summary      Get user's payment methods
+// @Description  Retrieves a list of all saved payment methods for the authenticated user.
+// @Tags         User & Profile
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} models.APIResponse[[]models.PaymentMethod]
+// @Failure      500 {object} models.APIResponse[any] "Failed to retrieve payment methods"
+// @Router       /payment-methods [get]
 func GetPaymentMethodsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
@@ -48,6 +69,18 @@ func GetPaymentMethodsHandler() gin.HandlerFunc {
 	}
 }
 
+// DeletePaymentMethodHandler godoc
+// @Summary      Delete a payment method
+// @Description  Deletes a specific payment method belonging to the authenticated user.
+// @Tags         User & Profile
+// @Produce      json
+// @Security     BearerAuth
+// @Param        methodId path     int true "Payment Method ID"
+// @Success      200      {object} models.APIResponse[any] "Payment method deleted successfully"
+// @Failure      400      {object} models.APIResponse[any] "Invalid payment method ID"
+// @Failure      404      {object} models.APIResponse[any] "Payment method not found"
+// @Failure      500      {object} models.APIResponse[any] "Failed to delete payment method"
+// @Router       /payment-methods/{methodId} [delete]
 func DeletePaymentMethodHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
