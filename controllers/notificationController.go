@@ -8,6 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetNotificationsHandler godoc
+// @Summary      Get user's notifications
+// @Description  Retrieves a list of all notifications for the currently authenticated user.
+// @Tags         Notifications & Settings
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} models.APIResponse[[]models.Notification]
+// @Failure      500 {object} models.APIResponse[any] "Failed to retrieve notifications"
+// @Router       /notifications [get]
 func GetNotificationsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
@@ -22,6 +31,18 @@ func GetNotificationsHandler() gin.HandlerFunc {
 	}
 }
 
+// MarkReadHandler godoc
+// @Summary      Mark notifications as read
+// @Description  Marks one or more notifications as read for the authenticated user.
+// @Tags         Notifications & Settings
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        ids body     models.MarkReadPayload true "Notification IDs to mark as read"
+// @Success      200 {object} models.APIResponse[any] "Notifications marked as read"
+// @Failure      400 {object} models.APIResponse[any] "Invalid request body"
+// @Failure      500 {object} models.APIResponse[any] "Failed to mark notifications as read"
+// @Router       /notifications/read [put]
 func MarkReadHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt64("userID")
