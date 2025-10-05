@@ -2,14 +2,15 @@ package services
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/AryaTabani/Dorivo/models"
 	"github.com/AryaTabani/Dorivo/repository"
 )
 
 func CreateOrderStatusNotification(ctx context.Context, userID, orderID int64, title string) error {
-	metadata, _ := json.Marshal(map[string]int64{"order_id": orderID})
+	metadata := models.RawJSONObject{
+		"order_id": orderID,
+	}
 
 	notification := &models.Notification{
 		UserID:   userID,
