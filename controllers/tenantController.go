@@ -9,6 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetTenantConfigHandler godoc
+// @Summary      Get tenant configuration
+// @Description  Retrieves the public configuration for a specific tenant, such as name, logo, theme, and contact info.
+// @Tags         Public
+// @Produce      json
+// @Param        tenantId path     string true "The unique name of the tenant"
+// @Success      200      {object} models.APIResponse[models.TenantConfig] "Configuration fetched successfully"
+// @Failure      404      {object} models.APIResponse[any] "Tenant not found"
+// @Failure      500      {object} models.APIResponse[any] "Could not retrieve tenant configuration"
+// @Router       /tenant/{tenantId} [get]
 func GetTenantConfigHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("tenantId")
