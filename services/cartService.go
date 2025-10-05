@@ -2,11 +2,14 @@ package services
 
 import (
 	"context"
+	"errors"
 
 	db "github.com/AryaTabani/Dorivo/DB"
 	"github.com/AryaTabani/Dorivo/models"
 	"github.com/AryaTabani/Dorivo/repository"
 )
+
+var ErrCartItemNotFound = errors.New("cart item not found or you do not have permission to modify it")
 
 func AddToCart(ctx context.Context, userID int64, payload *models.AddToCartPayload) error {
 	tx, err := db.DB.BeginTx(ctx, nil)
@@ -50,4 +53,26 @@ func GetCart(ctx context.Context, userID int64) (*models.Cart, error) {
 	}
 
 	return cart, nil
+}
+
+func UpdateCartItemQuantity(ctx context.Context, userID, itemID int64, quantity int) error {
+	rowsAffected, err := repository.UpdateCartItemQuantity(ctx, userID, itemID, quantity)
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrCartItemNotFound
+	}
+	return nil
+}
+
+func RemoveCartItem(ctx context.Context, userID, itemID int64) error {
+	rowsAffected, err := repository.RemoveCartItem(ctx, userID, itemID)
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrCartItemNotFound
+	}
+	return nil
 }
