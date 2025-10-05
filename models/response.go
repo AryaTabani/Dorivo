@@ -6,3 +6,11 @@ type APIResponse[T any] struct {
 	Data    T      `json:"data,omitempty"`
 	Error   string `json:"error,omitempty"`
 }
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
+type CreateProductResponse struct {
+	ProductID int64 `json:"product_id"`
+}
