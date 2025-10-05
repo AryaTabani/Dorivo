@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"strconv"
 
 	db "github.com/AryaTabani/Dorivo/DB"
 	"github.com/AryaTabani/Dorivo/models"
@@ -29,7 +28,6 @@ func FindOrCreateCartByUserID(ctx context.Context, tx *sql.Tx, userID int64) (in
 }
 
 func AddItem(ctx context.Context, tx *sql.Tx, cartID int64, payload *models.AddToCartPayload) error {
-
 	itemQuery := `INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, ?)`
 	res, err := tx.ExecContext(ctx, itemQuery, cartID, payload.ProductID, payload.Quantity)
 	if err != nil {
@@ -53,7 +51,6 @@ func AddItem(ctx context.Context, tx *sql.Tx, cartID int64, payload *models.AddT
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -88,8 +85,8 @@ func GetCartContentsByUserID(ctx context.Context, userID int64) ([]models.CartIt
 		}
 		if _, ok := cartItemsMap[itemID]; !ok {
 			cartItemsMap[itemID] = &models.CartItem{
-				ID:        strconv.FormatInt(itemID, 10),
-				ProductID: strconv.FormatInt(productID, 10),
+				ID:        itemID,
+				ProductID: productID,
 				Quantity:  quantity,
 				Name:      productName,
 				ImageURL:  productImageURL,
@@ -112,4 +109,28 @@ func GetCartContentsByUserID(ctx context.Context, userID int64) ([]models.CartIt
 	}
 
 	return items, nil
+}
+
+func UpdateCartItemQuantity(ctx context.Context, userID, itemID int64, quantity int) (int64, error) {
+	query := `
+		UPDATE cart_items SET quantity = ?
+		WHERE id = ? AND cart_id = (SELECT id FROM carts WHERE user_id = ?)
+	`
+	res, err := db.DB.ExecContext(ctx, query, quantity, itemID, userID)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+}
+
+func RemoveCartItem(ctx context.Context, userID, itemID int64) (int64, error) {
+	query := `
+		DELETE FROM cart_items
+		WHERE id = ? AND cart_id = (SELECT id FROM carts WHERE user_id = ?)
+	`
+	res, err := db.DB.ExecContext(ctx, query, itemID, userID)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
 }
