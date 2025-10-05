@@ -11,6 +11,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SearchProductsHandler godoc
+// @Summary      Search and filter products
+// @Description  Retrieves a list of products for a tenant, with optional filters for category, tags, price, and sorting.
+// @Tags         Public - Products
+// @Produce      json
+// @Param        tenantId  path     string false "Tenant ID"
+// @Param        category  query    string false "Filter by main category (e.g., Meal, Drink)"
+// @Param        tags      query    string false "Filter by comma-separated tags (e.g., Pizza,Cheese)"
+// @Param        min_price query    number false "Minimum price filter"
+// @Param        max_price query    number false "Maximum price filter"
+// @Param        sort_by   query    string false "Sort order (e.g., rating_desc)"
+// @Success      200       {object} models.APIResponse[[]models.Product]
+// @Failure      500       {object} models.APIResponse[any] "Failed to search for products"
+// @Router       /{tenantId}/products [get]
 func SearchProductsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantID := c.GetString("tenantID")
@@ -32,6 +46,15 @@ func SearchProductsHandler() gin.HandlerFunc {
 	}
 }
 
+// GetTagsHandler godoc
+// @Summary      Get all filter tags
+// @Description  Retrieves a list of all available tags for a specific tenant, used for building filter UIs.
+// @Tags         Public - Products
+// @Produce      json
+// @Param        tenantId path     string true "Tenant ID"
+// @Success      200      {object} models.APIResponse[[]models.Tag]
+// @Failure      500      {object} models.APIResponse[any] "Failed to retrieve tags"
+// @Router       /{tenantId}/tags [get]
 func GetTagsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantID := c.GetString("tenantID")
@@ -44,6 +67,18 @@ func GetTagsHandler() gin.HandlerFunc {
 	}
 }
 
+// GetProductDetailsHandler godoc
+// @Summary      Get product details
+// @Description  Retrieves detailed information for a single product, including its customization options.
+// @Tags         Public - Products
+// @Produce      json
+// @Param        tenantId  path     string true "Tenant ID"
+// @Param        productId path     int    true "Product ID"
+// @Success      200       {object} models.APIResponse[models.Product]
+// @Failure      400       {object} models.APIResponse[any] "Invalid product ID"
+// @Failure      404       {object} models.APIResponse[any] "Product not found"
+// @Failure      500       {object} models.APIResponse[any] "Failed to retrieve product details"
+// @Router       /{tenantId}/products/{productId} [get]
 func GetProductDetailsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantID := c.Param("tenantId")
@@ -66,6 +101,16 @@ func GetProductDetailsHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, models.APIResponse[*models.Product]{Success: true, Data: product})
 	}
 }
+
+// GetBestSellersHandler godoc
+// @Summary      Get best-selling products
+// @Description  Retrieves a list of the most popular products for a tenant, based on sales volume.
+// @Tags         Public - Products
+// @Produce      json
+// @Param        tenantId path     string true "Tenant ID"
+// @Success      200      {object} models.APIResponse[[]models.Product]
+// @Failure      500      {object} models.APIResponse[any] "Failed to retrieve best sellers"
+// @Router       /{tenantId}/products/bestsellers [get]
 func GetBestSellersHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantID := c.Param("tenantId")
@@ -86,6 +131,17 @@ func GetBestSellersHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// GetFeaturedProductHandler godoc
+// @Summary      Get the featured product
+// @Description  Retrieves the main promotional product for a tenant, often used for a large banner.
+// @Tags         Public - Products
+// @Produce      json
+// @Param        tenantId path     string true "Tenant ID"
+// @Success      200      {object} models.APIResponse[models.Product]
+// @Failure      404      {object} models.APIResponse[any] "No featured product found"
+// @Failure      500      {object} models.APIResponse[any] "Failed to retrieve featured product"
+// @Router       /{tenantId}/products/featured [get]
 func GetFeaturedProductHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantID := c.Param("tenantId")
@@ -114,6 +170,16 @@ func GetFeaturedProductHandler() gin.HandlerFunc {
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// GetRecommendedProductsHandler godoc
+// @Summary      Get recommended products
+// @Description  Retrieves a list of products marked as 'recommended' by the tenant admin.
+// @Tags         Public - Products
+// @Produce      json
+// @Param        tenantId path     string true "Tenant ID"
+// @Success      200      {object} models.APIResponse[[]models.Product]
+// @Failure      500      {object} models.APIResponse[any] "Failed to retrieve recommended products"
+// @Router       /{tenantId}/products/recommended [get]
 func GetRecommendedProductsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantID := c.Param("tenantId")
