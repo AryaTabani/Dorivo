@@ -39,7 +39,7 @@ func main() {
 		log.Println("Warning: .env file not found")
 	}
 	db.InitDB()
-
+	db.InitRedis()
 	router := gin.Default()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/tenant/:tenantId", controllers.GetTenantConfigHandler())
