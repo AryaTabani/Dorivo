@@ -3,7 +3,9 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	db "github.com/AryaTabani/Dorivo/DB"
 	"github.com/AryaTabani/Dorivo/models"
 	"github.com/AryaTabani/Dorivo/repository"
 )
@@ -21,7 +23,14 @@ func DeleteProduct(ctx context.Context, tenantID string, productID int64) error 
 }
 
 func UpdateTenantConfig(ctx context.Context, tenantID string, payload *models.TenantConfig) error {
-	return repository.UpdateTenantConfig(ctx, tenantID, payload)
+	err := repository.UpdateTenantConfig(ctx, tenantID, payload)
+	if err != nil {
+		return err
+	}
+	cacheKey := fmt.Sprintf("tenant_config:%s", tenantID)
+	db.Rdb.Del(db.Ctx, cacheKey)
+
+	return nil
 }
 func GetTenantOrders(ctx context.Context, tenantID string, status string) ([]models.Order, error) {
 	if status == "" {
